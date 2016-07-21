@@ -3,11 +3,11 @@ Integrate TnesorFlow with projects that use cmake without having to build inside
 
 ## TensorFlow
 [TensorFlow](https://www.tensorflow.org/) is an amazing tool for machine learning and intelligence using computational graphs.
-TensorFlow includes APIs for both Python and C++, although the C++ API is slightly less documented.  However, the most well
-documented way to integrate C++ projects with TensorFlow is to build the project *inside* the TensorFlow repository, yielding
-a massive binary.  Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build such projects. This document
-and the code in this reoository will allow one to build a C++ project using cmake without needed to build inside the TensorFlow
-repsoitory or generate a large binary.
+TensorFlow includes APIs for both Python and C++, although the C++ API is slightly less documented.  However, the most standard
+way to integrate C++ projects with TensorFlow is to build the project *inside* the TensorFlow repository, yielding a massive binary.
+Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build such projects. This document and the code in this
+reoository will allow one to build a C++ project using cmake without needing to build inside the TensorFlo repsoitory or generate a
+large binary.
 
 Note: The instructions here correspond to an Ubuntu Linux environment; although some command may differ for other operating systems and distributions, the general ideas are identical.
 
