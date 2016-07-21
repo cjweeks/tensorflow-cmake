@@ -59,6 +59,37 @@ sudo cp -r third_party  /usr/local/include/google/tensorflow/
 sudo rm -r /usr/local/include/google/tensorflow/third_party/py
 sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
 ```
+
+## Step 2: Configuring the CMake Project
+- Create a directory to hold CMake modules if one does not already exist. A common location for such modules is
+`<PROJECT_ROOT>/cmake/Modules/`. Copy both `eigen.cmake` and `FindTesseract.cmake` to this new directory.
+- Edit your `CMakeLists.txt` to append your new directory to the list of modules:
+
+```
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules") # replace "${PROJECT_SOURCE_DIR}/cmake/Modules" with your path
+```
+- Edit your `CMakeLists.txt` to require Protobuf, TensorFlow, and Eigen:
+```
+# Protobuf - CMake provides the FindProtobuf module
+find_package(Protobuf REQUIRED)
+include_directories(${Protobuf_INCLUDE_DIRS})
+target_link_libraries(<EXECUTABLE_NAME> ${Protobuf_LIBS})
+
+# TensorFlow
+find_package(TensorFlow REQUIRED)
+include_directories(${TensorFlow_INCLUDE_DIRS})
+target_link_libraries(<EXECUTABLE_NAME> ${TensorFlow_LIBS})
+
+# External dependencies (Eigen)
+# Location where external projects will be downloaded
+set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/downloads"
+        CACHE PATH "Location where external projects will be downloaded.")
+mark_as_advanced(DOWNLOAD_LOCATION)
+include(eigen)
+add_dependencies(<EXECUTABLE_NAME> eigen)
+```
+Note: Replace <EXECUTABLE_NAME> with the name of your project's executable.
+
 - Run `tfind.sh` to generate the correct eigen cmake file and install the correct protobuf version:
     - The usage is `tfind.sh <tensorflow-source-dir> [<cmake-dir> <install-protobuf>]`
     - `tensorflow-source-dir` is the directory containing the tensorflow repository; in my case it is `~/git/tensorflow`
@@ -66,5 +97,8 @@ sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
     - `install-protobuf` is either 'y' or 'n'. If the user specifies 'y', the required protobuf version will be cloned,
     built, tested, and installed. If 'n' is specified, the script simply prints out the protobuf repository URL and hash 
     corresponding to the required commit.
+
+
+
 
 ##MORE INFO TO COME
