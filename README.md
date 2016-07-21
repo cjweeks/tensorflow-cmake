@@ -6,7 +6,7 @@ Integrate TnesorFlow with projects that use cmake without having to build inside
 TensorFlow includes APIs for both Python and C++, although the C++ API is slightly less documented.  However, the most standard
 way to integrate C++ projects with TensorFlow is to build the project *inside* the TensorFlow repository, yielding a massive binary.
 Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build such projects. This document and the code in this
-reoository will allow one to build a C++ project using cmake without needing to build inside the TensorFlo repsoitory or generate a
+reoository will allow one to build a C++ project using cmake without needing to build inside the TensorFlow repsoitory or generate a
 large binary.
 
 Note: The instructions here correspond to an Ubuntu Linux environment; although some command may differ for other operating systems and distributions, the general ideas are identical.
@@ -67,3 +67,5 @@ sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
     built, tested, and installed. If 'n' is specified, the script simply prints out the protobuf repository URL and hash 
     corresponding to the required commit.  Execution of this script from the `resources` directory will look similar to:
     `./tfind.sh ~/git/tensorflow/ ../cmake/Modules/ y`
+
+##MORE INFO TO COME
