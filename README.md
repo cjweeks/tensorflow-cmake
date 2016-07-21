@@ -9,9 +9,9 @@ a massive binary.  Additionally, [Bazel](http://www.bazel.io/) is the only certi
 and the code in this reoository will allow one to build a C++ project using cmake without needed to build inside the TensorFlow
 repsoitory or generate a large binary.
 
-Note: The instructions here correspond to a Ubuntu Linux environment; although some command may differ for other operating systems and distributions, the general ideas are identical.
+Note: The instructions here correspond to an Ubuntu Linux environment; although some command may differ for other operating systems and distributions, the general ideas are identical.
 
-## Step 1: Install tensorFlow
+## Step 1: Install TensorFlow
 - Donwload TensorFlow from its git repository: `git clone https://github.com/tensorflow/tensorflow`
 - Install Bazel and Python dependencies: 
 ```
