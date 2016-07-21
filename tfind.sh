@@ -46,7 +46,7 @@ install_protobuf() {
 
 # validate and assign input
 if [ "$#" -lt 1 ]; then
-    echo "Usage: $0 <tensorflow-source-dir> [cmake-dir] [install-protobuf]"
+    echo "Usage: ${0} <tensorflow-source-dir> [cmake-dir] [install-protobuf]"
     exit 1
 fi
 
