@@ -17,6 +17,5 @@ find_library(TensorFlow_LIBRARY NAMES tensorflow_all
 set(TensorFlow_LIBS ${TensorFlow_LIBRARY})
 
 if(TesorFlow_LIBS AND TensorFlow_INCLUDE_DIRS)
-    message(FATAL_ERROR "Setting")
     set(TensorFlow_FOUND 1)
 endif()
