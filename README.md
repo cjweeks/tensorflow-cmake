@@ -9,7 +9,7 @@ Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build s
 reoository will allow one to build a C++ project using cmake without needing to build inside the TensorFlow repsoitory or generate a
 large binary.
 
-Note: The instructions here correspond to an Ubuntu Linux environment; although some command may differ for other operating systems and distributions, the general ideas are identical.
+Note: The instructions here correspond to an Ubuntu Linux environment; although some commands may differ for other operating systems and distributions, the general ideas are identical.
 
 ## Step 1: Install TensorFlow
 - Donwload TensorFlow from its git repository: `git clone https://github.com/tensorflow/tensorflow`
