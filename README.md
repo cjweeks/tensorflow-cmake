@@ -62,10 +62,9 @@ sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
 - Run `tfind.sh` to generate the correct eigen cmake file and install the correct protobuf version:
     - The usage is `tfind.sh <tensorflow-source-dir> [<cmake-dir> <install-protobuf>]`
     - `tensorflow-source-dir` is the directory containing the tensorflow repository; in my case it is `~/git/tensorflow`
-    - `cmake-dir` is the directory to generate the new cmake module; in this case it is `<PROJECT_ROOT>/cmake/Modules`
+    - `cmake-dir` is the directory to generate the new cmake module; many cases it is `<PROJECT_ROOT>/cmake/Modules`
     - `install-protobuf` is either 'y' or 'n'. If the user specifies 'y', the required protobuf version will be cloned,
     built, tested, and installed. If 'n' is specified, the script simply prints out the protobuf repository URL and hash 
-    corresponding to the required commit.  Execution of this script from the `resources` directory will look similar to:
-    `./tfind.sh ~/git/tensorflow/ ../cmake/Modules/ y`
+    corresponding to the required commit.
 
 ##MORE INFO TO COME
