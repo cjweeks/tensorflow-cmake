@@ -22,7 +22,7 @@ sudo apt-get install python-numpy swig python-dev python-wheel
 ```
 # Added build rule
 cc_binary(
-        name = "libtensorflow_full.so",
+        name = "libtensorflow_all.so",
         linkshared = 1,
         deps = [
             "//tensorflow/cc:cc_ops",
