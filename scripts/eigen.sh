@@ -56,3 +56,4 @@ fi
 if [ "${MODE}" == "external" ]; then
     # add eigen as external cmake dependency
     
+# set(eigen_dir eigen-eigen-${eigen_archive_hash})
