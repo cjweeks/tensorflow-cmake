@@ -1,7 +1,8 @@
+#!/usr/bin/env bash
 SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
 
 # Exits if user doe not have root priveledges
-check_root() {
+check_root () {
     if [ "${EUID}" -ne 0 ]; then
 	echo "Please run as root to install."
 	exit 1
@@ -9,10 +10,10 @@ check_root() {
 }
 
 # Prints usage information concerning this script
-print_usage() {
+print_usage () {
     echo "Usage: ${0} external|install <tensorflow-source-dir> [cmake-dir]"
 }
-
+echo "${1}"
 # validate and assign input
 if [ "$#" -lt 2 ]; then
     print_usage
@@ -26,6 +27,7 @@ elif [ "${1}" == "external" ]; then
     MODE="external"
 else
     print_usage
+    exit 1
 fi
 # get arguments
 TF_DIR="${2}"
@@ -70,12 +72,25 @@ echo "Eigen URL Hash:      ${EIGEN_HASH}"
 echo "Eigen Archive Hash:  ${EIGEN_ARCHIVE_HASH}"
 echo
 
-# output Eigen information to file
-EIGEN_OUT="${CMAKE_DIR}/eigen_VERSION.cmake"
-echo "set(eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT}
-echo "set(eigen_archive_hash ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
-echo "set(eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
-echo "set(eigen_dir eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
-cp ${SCRIPT_DIR}/../cmake/eigen.cmake ${CMAKE_DIR}
-echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
+if [ "${MODE}" == "external" ]; then
+    # output Eigen information to file
+    EIGEN_OUT="${CMAKE_DIR}/eigen_VERSION.cmake"
+    echo "set(eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT}
+    echo "set(eigen_archive_hash ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+    echo "set(eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
+    echo "set(eigen_dir eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+    cp ${SCRIPT_DIR}/../cmake/eigen.cmake ${CMAKE_DIR}
+    echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
+elif [ "${MODE}" == "install" ]; then
+    # donwload eigen and extract to /usr/local/include
+    mkdir -p /usr/local/include/eigen
+    rm -r /usr/local/include/eigen/*
+    cd /usr/local/include/eigen
+    wget ${EIGEN_URL}
+    tar -zxvf *
+    echo
+    echo "All files copied to /usr/local/eigen"
+fi
+
+echo "Done"
 
