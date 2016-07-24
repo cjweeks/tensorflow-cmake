@@ -13,7 +13,7 @@ check_root () {
 print_usage () {
     echo "Usage: ${0} external|install <tensorflow-source-dir> [cmake-dir]"
 }
-echo "${1}"
+
 # validate and assign input
 if [ "$#" -lt 2 ]; then
     print_usage
@@ -82,6 +82,8 @@ if [ "${MODE}" == "external" ]; then
     cp ${SCRIPT_DIR}/../cmake/eigen.cmake ${CMAKE_DIR}
     echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
 elif [ "${MODE}" == "install" ]; then
+    # copy eigen files to cmake directory
+    cp ${SCRIPT_DIR}/../cmake/FindEigen.cmake ${CMAKE_DIR}
     # donwload eigen and extract to /usr/local/include
     mkdir -p /usr/local/include/eigen
     rm -r /usr/local/include/eigen/*
@@ -89,7 +91,8 @@ elif [ "${MODE}" == "install" ]; then
     wget ${EIGEN_URL}
     tar -zxvf *
     echo
-    echo "All files copied to /usr/local/eigen"
+    echo "All Eigen files copied to /usr/local/eigen"
+    echo "FindEigen.cmake copied to ${CMAKE_DIR}"
 fi
 
 echo "Done"
