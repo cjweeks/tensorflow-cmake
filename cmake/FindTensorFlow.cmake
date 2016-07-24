@@ -1,3 +1,7 @@
+# FindTensorFlow.cmake
+# Connor Weeks
+# Locates the tensorFlow include directories and library.
+
 unset(TensorFlow_FOUND)
 
 find_path(TensorFlow_INCLUDE_DIRS

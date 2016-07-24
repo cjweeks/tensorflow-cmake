@@ -1,3 +1,9 @@
+# FindEigen.cmake
+# Connor Weeks
+# Finds the required directories to include Eigen
+# Since Eigen is only header files, there is no library
+# to locate.
+
 unset(Eigen_FOUND)
 include(eigen_VERSION)
 find_path(Eigen_INCLUDE_DIRS

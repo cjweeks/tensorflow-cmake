@@ -8,11 +8,33 @@ check_root() {
     fi
 }
 
+# Prints usage information concerning this script
 print_usage() {
-    echo "Usage: ${0} <external|install> <tensorflow-source-dir> [cmake-dir]"
+    echo "Usage: ${0} external|install <tensorflow-source-dir> [cmake-dir]"
 }
 
+# validate and assign input
+if [ "$#" -lt 2 ]; then
+    print_usage
+    exit 1
+fi
+# Determine mode
+if [ "${1}" == "install" ]; then
+    check_root
+    MODE="install"
+elif [ "${1}" == "external" ]; then
+    MODE="external"
+else
+    print_usage
+fi
+# get arguments
+TF_DIR="${2}"
+CMAKE_DIR="."
+if [ "$#" -gt 2 ]; then
+    CMAKE_DIR="${3}"
+fi
 
+# locate eigen archive in tensorflow directory
 ANY="[^\)]*"
 ANY_NO_QUOTES="[^\)\\\"]*"
 ANY_HEX="[a-fA-F0-9]*"
@@ -29,8 +51,8 @@ URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 HASH="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
 ARCHIVE_HASH="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
 
-echo "Finding eigen version in ${1}..."
-EIGEN_TEXT=$(grep -Pzro ${EIGEN_REGEX} ${1})
+echo "Finding eigen version in ${TF_DIR}..."
+EIGEN_TEXT=$(grep -Pzro ${EIGEN_REGEX} ${TF_DIR})
 
 EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL})
 EIGEN_HASH=$(echo "${EIGEN_TEXT}" | sed -n ${HASH})
@@ -41,19 +63,19 @@ if [ -z "${EIGEN_URL}" ] || [ -z "${EIGEN_HASH}" ] || [ -z "${EIGEN_ARCHIVE_HASH
     exit 1
 fi
 
-# validate and assign input
-if [ "$#" -lt 2 ]; then
-    print_usage 
-    exit 1
-fi
-MODE="${1}"
-TF_DIR="${2}"
-CMAKE_DIR="."
-if [ "$#" -gt 2 ]; then
-    CMAKE_DIR="${3}"
-fi
+# print information
+echo
+echo "Eigen URL:           ${EIGEN_URL}"
+echo "Eigen URL Hash:      ${EIGEN_HASH}"
+echo "Eigen Archive Hash:  ${EIGEN_ARCHIVE_HASH}"
+echo
 
-if [ "${MODE}" == "external" ]; then
-    # add eigen as external cmake dependency
-    
-# set(eigen_dir eigen-eigen-${eigen_archive_hash})
+# output Eigen information to file
+EIGEN_OUT="${CMAKE_DIR}/eigen_VERSION.cmake"
+echo "set(eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT}
+echo "set(eigen_archive_hash ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+echo "set(eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
+echo "set(eigen_dir eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+cp ${SCRIPT_DIR}/../cmake/eigen.cmake ${CMAKE_DIR}
+echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
+
