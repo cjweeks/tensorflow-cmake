@@ -2,22 +2,24 @@ include(ExternalProject)
 include(protobuf_VERSION)
 
 set(protobuf_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/external/protobuf)
+set(protobuf_LIB_DIR ${PROJECT_SOURCE_DIR}/external/lib
 
-set(protobuf_BUILD ${PROJECT_SOURCE_DIR}/external/third_party/eigen/src/eigen)
-set(protobuf_INSTALL ${PROJECT_SOURCE_DIR}/external/third_party/eigen/install)
-
-ExternalProject_Add(eigen
-        PREFIX ${PROJECT_SOURCE_DIR}/external/eigen
-        URL ${eigen_URL}
-        URL_HASH ${eigen_HASH}
-        DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
+ExternalProject_Add(protobuf
+        PREFIX ${PROJECT_SOURCE_DIR}/external/protobuf
+        GIT_REPOSITORY ${protobuf_URL}
+        GIT_TAG ${protobuf_commit}
+        # DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
         INSTALL_DIR "${eigen_INSTALL}"
-        BINARY_DIR "${eigen_INSTALL}"
+        #BINARY_DIR "${eigen_INSTALL}"
+	CONFIGURE_COMMAND ./autogen.sh && ./configure --prefix=${PROJECT_SOURCE_DIR}/external
+	BUILD_COMMAND make
+	TEST_BEFORE_INSTALL 1
+	TEST_COMMAND make check
+	INSTALL_COMMAND make install
+        #CMAKE_ARGS
+        #-DCMAKE_BUILD_TYPE:STRING=Release
+        #-DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
+        #-DCMAKE_INSTALL_PREFIX:STRING=${eigen_INSTALL}
+        #-DINCLUDE_INSTALL_DIR:STRING=${PROJECT_SOURCE_DIR}/external/eigen-archive/${eigen_dir}
 
-        CMAKE_ARGS
-        -DCMAKE_BUILD_TYPE:STRING=Release
-        -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF
-        -DCMAKE_INSTALL_PREFIX:STRING=${eigen_INSTALL}
-        -DINCLUDE_INSTALL_DIR:STRING=${PROJECT_SOURCE_DIR}/external/eigen-archive/${eigen_dir}
-
-include_directories(${eigen_INCLUDE_DIRS})
+include_directories(${protobuf_INCLUDE_DIRS})

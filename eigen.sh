@@ -80,7 +80,7 @@ if [ "${MODE}" == "external" ]; then
     echo "set(eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
     echo "set(eigen_dir eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
     cp ${SCRIPT_DIR}/../cmake/eigen.cmake ${CMAKE_DIR}
-    echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
+    echo "Wrote eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
 elif [ "${MODE}" == "install" ]; then
     # copy eigen files to cmake directory
     cp ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR}
