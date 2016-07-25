@@ -4,3 +4,5 @@
 gen/
 python/
 **/build/
+**/bin/
+**/external/
