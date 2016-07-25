@@ -83,7 +83,7 @@ if [ "${MODE}" == "external" ]; then
     echo "Copied eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
 elif [ "${MODE}" == "install" ]; then
     # copy eigen files to cmake directory
-    cp ${SCRIPT_DIR}/../cmake/FindEigen.cmake ${CMAKE_DIR}
+    cp ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR}
     # donwload eigen and extract to /usr/local/include
     mkdir -p /usr/local/include/eigen
     rm -r /usr/local/include/eigen/*

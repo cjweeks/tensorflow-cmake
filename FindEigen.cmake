@@ -10,8 +10,8 @@ find_path(Eigen_INCLUDE_DIRS
         NAMES
         eigen/${eigen_dir}
         HINTS
-	/usr/local/include/google/tensorflow
-        /usr/include/google/tensorflow)
+	/usr/local/include
+        /usr/include)
 
 if(Eigen_INCLUDE_DIRS)
     set(Eigen_FOUND 1)

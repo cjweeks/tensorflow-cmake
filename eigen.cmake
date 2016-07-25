@@ -10,8 +10,8 @@ set(eigen_INCLUDE_DIRS
 set(eigen_BUILD ${PROJECT_SOURCE_DIR}/external/third_party/eigen/src/eigen)
 set(eigen_INSTALL ${PROJECT_SOURCE_DIR}/external/third_party/eigen/install)
 
-ExternalProject_Add(eigen
-        PREFIX ${PROJECT_SOURCE_DIR}/external/eigen
+ExternalProject_Add(protobuf
+        PREFIX ${PROJECT_SOURCE_DIR}/external/protobuf
         URL ${eigen_URL}
         URL_HASH ${eigen_HASH}
         DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
