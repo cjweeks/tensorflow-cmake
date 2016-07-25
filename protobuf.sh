@@ -80,7 +80,7 @@ if [ "${MODE}" == "external" ]; then
 elif [ "${MODE}" == "install" ]; then
     # clone protobuf from its git repository
     git clone ${PROTOBUF_URL}
-    git reset --hard ${GIT_COMMIT}
+    git reset --hard ${PROTOBUF_COMMIT}
     cd protobuf
     ./autogen.sh
     ./configure
