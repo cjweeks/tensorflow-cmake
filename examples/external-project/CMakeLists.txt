@@ -14,7 +14,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 # TensorFlow
 find_package(TensorFlow REQUIRED)
 include_directories(${TensorFlow_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE} ${TensorFlow_LIBS})
+target_link_libraries(${EXECUTABLE} ${TensorFlow_LIBRARIES})
 
 # External dependencies (Eigen and Protobuf)
 # Location where external projects will be downloaded

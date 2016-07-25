@@ -14,14 +14,14 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 # TensorFlow
 find_package(TensorFlow REQUIRED)
 include_directories(${TensorFlow_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE} ${TensorFlow_LIBS})
+target_link_libraries(${EXECUTABLE} ${TensorFlow_LIBRARIES})
 
 # Eigen
 find_package(Eigen REQUIRED)
 include_directories(${Eigen_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE} ${Eigen_LIBS})
+target_link_libraries(${EXECUTABLE} ${Eigen_LIBRARIES})
 
-# Protobuf
+# Protobuf (this module ships with CMake)
 find_package(Protobuf REQUIRED)
-include_directories(${Protobuf_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE} ${Protobuf_LIBS})
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+target_link_libraries(${EXECUTABLE} ${PROTOBUF_LIBRARIES})

@@ -1,6 +1,4 @@
-# FindTensorFlow.cmake
-# Connor Weeks
-# Locates the tensorFlow include directories and library.
+# Locates the tensorFlow library and include directories.
 
 include(FindPackageHandleStandardArgs)
 unset(TensorFlow_FOUND)
@@ -19,17 +17,14 @@ find_library(TensorFlow_LIBRARY NAMES tensorflow_all
         /usr/lib
         /usr/local/lib)
 
-set(TensorFlow_LIBS ${TensorFlow_LIBRARY})
-
-
-# handle the QUIETLY and REQUIRED arguments and set LOGGING_FOUND to TRUE
-# if all listed variables are TRUE
+# set TensorFlow_FOUND
 find_package_handle_standard_args(TensorFlow DEFAULT_MSG TensorFlow_INCLUDE_DIR TensorFlow_LIBRARY)
 
+# set external variables for usage in CMakeLists.txt
 if (TensorFlow_FOUND)
-    set(TensorFlow_LIBRARIES ${TensorFlow_LIBRARY} )
-    set(TensorFlow_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIR} )
-    set(TensorFlow_DEFINITIONS )
+    set(TensorFlow_LIBRARIES ${TensorFlow_LIBRARY})
+    set(TensorFlow_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIR})
 endif()
 
+# hide locals from GUI
 mark_as_advanced(TensorFlow_INCLUDE_DIR TensorFlow_LIBRARY)
