@@ -91,11 +91,11 @@ exactly what version of Eigen to obtain.  Add the following to your `CMakeLists.
 ```CMake
 # Eigen (external dependency)
 # Location where external projects will be downloaded
-set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/downloads"
+set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
         CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
-include(eigen)
-add_dependencies(<EXECUTABLE_NAME> eigen) # replace <EXECUTABLE_NAME> with name of executable
+include(Eigen)
+add_dependencies(<EXECUTABLE_NAME> Eigen) # replace <EXECUTABLE_NAME> with name of executable
 ```
 
 
@@ -112,21 +112,21 @@ Edit your `CMakeLists.txt` to require Protobuf, TensorFlow, and Eigen:
 ```CMake
 # Protobuf - CMake provides the FindProtobuf module
 find_package(Protobuf REQUIRED)
-include_directories(${Protobuf_INCLUDE_DIRS})
-target_link_libraries(<EXECUTABLE_NAME> ${Protobuf_LIBS})
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+target_link_libraries(<EXECUTABLE_NAME> ${PROTOBUF_LIBRARIES})
 
 # TensorFlow
 find_package(TensorFlow REQUIRED)
 include_directories(${TensorFlow_INCLUDE_DIRS})
-target_link_libraries(<EXECUTABLE_NAME> ${TensorFlow_LIBS})
+target_link_libraries(<EXECUTABLE_NAME> ${TensorFlow_LIBRARIES})
 
 # External dependencies (Eigen)
 # Location where external projects will be downloaded
 set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/downloads"
         CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
-include(eigen)
-add_dependencies(<EXECUTABLE_NAME> eigen)
+include(Eigen)
+add_dependencies(<EXECUTABLE_NAME> Eigen)
 ```
 Note: Replace <EXECUTABLE_NAME> with the name of your project's executable.
 
