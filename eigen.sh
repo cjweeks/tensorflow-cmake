@@ -74,13 +74,13 @@ echo
 
 if [ "${MODE}" == "external" ]; then
     # output Eigen information to file
-    EIGEN_OUT="${CMAKE_DIR}/eigen_VERSION.cmake"
-    echo "set(eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT}
-    echo "set(eigen_archive_hash ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
-    echo "set(eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
-    echo "set(eigen_dir eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
-    cp ${SCRIPT_DIR}/eigen.cmake ${CMAKE_DIR}
-    echo "Wrote eigen_VERSION.cmake and eigen.cmake to ${CMAKE_DIR}"
+    EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
+    echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT}
+    echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+    echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT}
+    echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT}
+    cp ${SCRIPT_DIR}/Eigen.cmake ${CMAKE_DIR}
+    echo "Wrote Eigen_VERSION.cmake and Eigen.cmake to ${CMAKE_DIR}"
 elif [ "${MODE}" == "install" ]; then
     # copy eigen files to cmake directory
     cp -p ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR}

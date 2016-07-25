@@ -22,7 +22,7 @@ set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
   CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
 
-include(protobuf)
-include(eigen)
+include(Protobuf)
+include(Eigen)
 
-add_dependencies(${EXECUTABLE} eigen protobuf)
+add_dependencies(${EXECUTABLE} Eigen Protobuf)

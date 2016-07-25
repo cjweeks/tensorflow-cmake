@@ -72,11 +72,11 @@ echo
 
 if [ "${MODE}" == "external" ]; then
     # output protobuf information to file
-    PROTOBUF_OUT="${CMAKE_DIR}/protobuf_VERSION.cmake"
-    echo "set(protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT}
-    echo "set(protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT}
-    cp ${SCRIPT_DIR}/protobuf.cmake ${CMAKE_DIR}
-    echo "Wrote protobuf_VERSION.cmake and protobuf.cmake to ${CMAKE_DIR}"
+    PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"
+    echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT}
+    echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT}
+    cp ${SCRIPT_DIR}/Protobuf.cmake ${CMAKE_DIR}
+    echo "Wrote Protobuf_VERSION.cmake and Protobuf.cmake to ${CMAKE_DIR}"
 elif [ "${MODE}" == "install" ]; then
     # clone protobuf from its git repository
     git clone ${PROTOBUF_URL}

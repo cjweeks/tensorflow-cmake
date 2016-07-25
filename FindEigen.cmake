@@ -8,7 +8,7 @@ unset(Eigen_FOUND)
 
 find_path(Eigen_INCLUDE_DIR
         NAMES
-        eigen/${eigen_dir}
+        eigen/${Eigen_DIR}
         HINTS
 	/usr/local/include
         /usr/include)
