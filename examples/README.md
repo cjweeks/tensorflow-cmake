@@ -13,5 +13,5 @@ cmake ..
 make
 ```
 
-This will create a bin/ directory in the project root, holding the executable. Run it *from the project root
+This will create a `bin/` directory in the project root, holding the executable. Run it *from the project root
 directory* like this: `bin/<binary-name>` where `<binary-name>` is either `external-project` or `install-project`.
