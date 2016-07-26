@@ -71,7 +71,7 @@ inside the project directory, not affecting any current versions.
 
 Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.
 
-### Eigen: Installing to `/usr/local/`
+### Eigen: Installing to `/usr/local`
 Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<cmake-path>]`. The `insatll` command specifies that Eigen is to be installed to 
 `usr/local/include`. The `<tensorflow-root>` argument should be the root of the TensorFlow repository. The optional `<cmake-path>` argument specifies the path to
 copy the required CMake modules to (this should be your CMake modules directory); if left blank, the current directory will be used. This script installs Eigen
@@ -95,7 +95,7 @@ add_dependencies(<EXECUTABLE_NAME> Eigen) # replace <EXECUTABLE_NAME> with name 
 ```
 
 
-### Protobuf: Installing to `/usr/local/`
+### Protobuf: Installing to `/usr/local`
 Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-path>]`. The arguments are identical to those described in the Eigen
 section above.  Add the following to your `CMakeLists.txt`:
 ```CMake
