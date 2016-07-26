@@ -71,8 +71,8 @@ inside the project directory, not affecting any current versions.
 
 Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.
 
-### Eigen: Installing to `/usr/local`
-Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<cmake-path>]`. the `insatll` command specifies that Eigen is to be installed to 
+### Eigen: Installing to `/usr/local/`
+Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<cmake-path>]`. The `insatll` command specifies that Eigen is to be installed to 
 `usr/local/include`. The `<tensorflow-root>` argument should be the root of the TensorFlow repository. The optional `<cmake-path>` argument specifies the path to
 copy the required CMake modules to (this should be your CMake modules directory); if left blank, the current directory will be used. This script installs Eigen
 and copies `FindEigen.cmake` to the specified directory.  Add the following to your `CMakeLists.txt`:
@@ -89,58 +89,45 @@ and the optional `<cmake-path>` argument is the location to copy the required CM
 to the specified directory: `eigen.cmake` and `eigen_VERSION.cmake`. The former contains the specification of the external project, whereas the latter defines
 exactly what version of Eigen to obtain.  Add the following to your `CMakeLists.txt`:
 ```CMake
-# Eigen (external dependency)
-# Location where external projects will be downloaded
-set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
-        CACHE PATH "Location where external projects will be downloaded.")
-mark_as_advanced(DOWNLOAD_LOCATION)
+# Eigen
 include(Eigen)
 add_dependencies(<EXECUTABLE_NAME> Eigen) # replace <EXECUTABLE_NAME> with name of executable
 ```
 
 
-## Step 3: Configure the CMake Project
-Create a directory to hold CMake modules if one does not already exist. A common location for such modules is
-`<PROJECT_ROOT>/cmake/Modules/`. Copy both `eigen.cmake` and `FindTesseract.cmake` to this new directory.
-Edit your `CMakeLists.txt` to append your new directory to the list of modules:
-
-```CMake
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules") # replace "${PROJECT_SOURCE_DIR}/cmake/Modules" with your path
-```
-Edit your `CMakeLists.txt` to require Protobuf, TensorFlow, and Eigen:
- 
+### Protobuf: Installing to `/usr/local/`
+Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-path>]`. The arguments are identical to those described in the Eigen
+section above.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Protobuf - CMake provides the FindProtobuf module
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 target_link_libraries(<EXECUTABLE_NAME> ${PROTOBUF_LIBRARIES})
+```
 
-# TensorFlow
-find_package(TensorFlow REQUIRED)
-include_directories(${TensorFlow_INCLUDE_DIRS})
-target_link_libraries(<EXECUTABLE_NAME> ${TensorFlow_LIBRARIES})
+### Protobuf: Adding as External Dependency
+Execute the `protobuf.sh` script as follows: `protobuf.sh external <tensorflow-root> [<cmake-path>]`. The arguments are also identical to those described in the Eigen
+section above.  Add the following to your `CMakeLists.txt`:
+```CMake
+# Protobuf
+include(Protobuf)
+add_dependencies(<EXECUTABLE_NAME> Protobuf) # replace <EXECUTABLE_NAME> with name of executable
+```
 
-# External dependencies (Eigen)
-# Location where external projects will be downloaded
-set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/downloads"
+## Step 3: Configure the CMake Project
+
+Edit your `CMakeLists.txt` to append your new directory to the list of modules:
+```CMake
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
+# replace "${PROJECT_SOURCE_DIR}/cmake/Modules" with your path
+```
+If *either* Protobuf or Eigen was added as an external dependency, add the follwing to your `CMakeLists.txt`:
+ 
+```CMake
+# specify download location
+set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
         CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
-include(Eigen)
-add_dependencies(<EXECUTABLE_NAME> Eigen)
 ```
-Note: Replace <EXECUTABLE_NAME> with the name of your project's executable.
-
-#### Install Eigen and Protobuf
-Run `tfind.sh` to generate the correct eigen cmake file and install the correct protobuf version:
-
-- The usage is `tfind.sh <tensorflow-source-dir> [<cmake-dir> <install-protobuf>]`
-- `tensorflow-source-dir` is the directory containing the tensorflow repository; in my case it is `~/git/tensorflow`
-- `cmake-dir` is the directory to generate the new cmake module; many cases it is `<PROJECT_ROOT>/cmake/Modules`
-- `install-protobuf` is either 'y' or 'n'. If the user specifies 'y', the required protobuf version will be cloned,
-built, tested, and installed. If 'n' is specified, the script simply prints out the protobuf repository URL and hash 
-corresponding to the required commit.
-
-
-
 
 ##MORE INFO TO COME
