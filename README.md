@@ -13,13 +13,14 @@ Note: The instructions here correspond to an Ubuntu Linux environment; although 
 
 ## Step 1: Install TensorFlow
 Donwload TensorFlow from its git repository: `git clone https://github.com/tensorflow/tensorflow`
-Install Bazel and Python dependencies: 
+Install Bazel and Python dependencies as wellas some packages reuired for Protobuf: 
 ```bash
-sudo apt-get install bazel
-sudo apt-get install python-numpy swig python-dev python-wheel
+sudo apt-get install bazel                                          # Bazel
+sudo apt-get install python-numpy swig python-dev python-wheel      # TensorFlow
+sudo apt-get install autoconf automake libtool curl make g++ unzip  # Protobuf
 ```
 Enter the cloned repository, and append the following to the `tensorflow/BUILD` file:
-```
+```bash
 # Added build rule
 cc_binary(
     name = "libtensorflow_all.so",
