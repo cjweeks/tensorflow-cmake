@@ -3,7 +3,12 @@
 This directory contains two simple TensorFlow projects that may be built using cmake. The `external-project`
 directory contains a project set up using Eigen and Protobuf as exteral dependencies (they wil be donwloaded
 inside the external/ directory of the project wwhen built).  The `install-project`, however, requires you to
-install both Eigen and Protobuf on your machine before building.
+install both Eigen and Protobuf on your machine before building.  These two projects are compatble with TensorFlow
+at commit `fc9162975e52978d3af38549b570cc3cc5f0ab66`.  To get this version:
+```bash
+git clone https://github.com/tensorflow/tensorflow
+git reset --hard fc9162975e52978d3af38549b570cc3cc5f0ab66
+```
 
 ## Building and Running
 To build either of theese projects, create a directory inside the project to build from; then call cmake
