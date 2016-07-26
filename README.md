@@ -38,7 +38,7 @@ Install:
 bazel build tensorflow:libtensorflow_full.so
 sudo cp bazel-bin/tensorflow/libtensorflow_full.so /usr/local/lib
 ```
-Copy source to /usr/local/include/google and remove unneeded items
+Copy source to `/usr/local/include/google` and remove unneeded items
 ```bash
 sudo mkdir -p /usr/local/include/google/tensorflow
 sudo cp -r tensorflow /usr/local/include/google/tensorflow/
@@ -70,7 +70,7 @@ provided:
 - Add the packages as external dependencies, allowing CMake to download and build them
 inside the project directory, not affecting any current versions.
 
-Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.
+Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.  IN the following instructions, be sure to replace `<EXECUTABLE_NAME>` with the name of your executable.
 
 ### Eigen: Installing to `/usr/local`
 Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<cmake-path>]`. The `insatll` command specifies that Eigen is to be installed to 
@@ -92,7 +92,7 @@ exactly what version of Eigen to obtain.  Add the following to your `CMakeLists.
 ```CMake
 # Eigen
 include(Eigen)
-add_dependencies(<EXECUTABLE_NAME> Eigen) # replace <EXECUTABLE_NAME> with name of executable
+add_dependencies(<EXECUTABLE_NAME> Eigen)
 ```
 
 
@@ -112,23 +112,24 @@ section above.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Protobuf
 include(Protobuf)
-add_dependencies(<EXECUTABLE_NAME> Protobuf) # replace <EXECUTABLE_NAME> with name of executable
+add_dependencies(<EXECUTABLE_NAME> Protobuf)
 ```
 
 ## Step 3: Configure the CMake Project
 
-Edit your `CMakeLists.txt` to append your new directory to the list of modules:
+Edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most cmake programs):
 ```CMake
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
-# replace "${PROJECT_SOURCE_DIR}/cmake/Modules" with your path
+list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
+# replace <CMAKE_MODULE_DIR> with your path
+# The most common path is ${PROJECT_SOURCE_DIR}/cmake/Modules
 ```
 If *either* Protobuf or Eigen was added as an external dependency, add the follwing to your `CMakeLists.txt`:
  
 ```CMake
 # specify download location
 set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
-        CACHE PATH "Location where external projects will be downloaded.")
+     CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
 ```
 
-##MORE INFO TO COME
+The projects in the `examples/` directory demonstrate the correct usage of these instructions.
