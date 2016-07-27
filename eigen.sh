@@ -12,10 +12,12 @@ print_usage () {
     echo "|
 | Usage: ${0} generate|install [args]
 |
-| --> ${0} generate installed|external <tensorflow-source-dir> [<cmake-dir>]:
+| --> ${0} generate installed|external <tensorflow-source-dir> [<cmake-dir> <install-dir>]:
 |
 |     Generates the cmake files for the given installation of tensorflow
-|     and writes them to <cmake-dir>
+|     and writes them to <cmake-dir>.  If 'generate installed' is executed,
+|     <install-dir> corresponds to the directory eigen was installed to; 
+|     defaults to /usr/local.
 |
 | --> ${0} install <tensorflow-source-dir> [<install-dir> <download-dir>]
 |
@@ -60,6 +62,10 @@ elif [ "${MODE}" == "generate" ]; then
     CMAKE_DIR="."
     if [ "$#" -gt 3 ]; then
 	CMAKE_DIR="${4}"
+    fi
+    INSTALL_DIR="/usr/local"
+    if [ "${GENERATE_MODE}" == "installed" ] && [ "$#" -gt 4 ]; then
+	INSTALL_DIR="${5}"
     fi
 fi
     
@@ -113,7 +119,7 @@ if [ "${MODE}" == "install" ]; then
     # create build directory and build
     mkdir build || fail
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DINCLUDE_INSTALL_DIR=include/eigen-eigen-${EIGEN_ARCHIVE_HASH} .. || fail
+    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DINCLUDE_INSTALL_DIR=${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH} .. || fail
     make || fail
     make install || fail
     echo "Installation complete"
@@ -123,12 +129,20 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
+     # locate eigen in INSTALL_DIR
+    if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then
+       echo "Found Eigen in ${INSTALL_DIR}"
+    else
+	echo "Failure: Could not find Eigen in ${INSTALL_DIR}"
+	exit 1
+    fi
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
     echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
     echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT} || fail
     echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
+    echo "set(Eigen_INSTALL_DIR ${INSTALL_DIR})" >> ${EIGEN_OUT} || fail
     echo "Eigen_VERSION.cmake written to ${CMAKE_DIR}"
     # perform specific operations regarding installation
     if [ "${GENERATE_MODE}" == "external" ]; then
