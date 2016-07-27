@@ -138,7 +138,7 @@ If *either* Protobuf or Eigen was added as an external dependency, add the follo
 ```CMake
 # specify download location
 set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
-     CACHE PATH "Location where external projects will be downloaded")
+        CACHE PATH "Location where external projects will be downloaded")
 mark_as_advanced(DOWNLOAD_LOCATION)
 ```
 
