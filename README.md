@@ -67,17 +67,22 @@ The TensorFlow runtime library requires both [Protobuf](https://developers.googl
 However, specific versions are required, and these may clash with currently installed versions of either software.  Therefore, two options are
 provided:
 
-- Install the packages to `/usr/local`, which will overwrite / clash with any previous versions (but allow multiple projects to reference them).
-- Add the packages as external dependencies, allowing CMake to download and build them
-inside the project directory, not affecting any current versions.
+- Install the packages to a directory on your computer, which will overwrite / clash with any previous versions installed in that directory (but allow multiple projects to reference them).
+The default directory is `/usr/local/`, but any may be specified to avoid clashing. *This is the recommended option.*
+- Add the packages as external dependencies, allowing CMake to download and build them inside the project directory, not affecting any current versions.  This will never result in clashing,
+but the build process of your project may be lengthened.
 
-Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.  IN the following instructions, be sure to replace `<EXECUTABLE_NAME>` with the name of your executable.
+Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.  In the following 
+instructions, be sure to replace `<EXECUTABLE_NAME>` with the name of your executable.
 
-### Eigen: Installing to `/usr/local`
-Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<cmake-path>]`. The `insatll` command specifies that Eigen is to be installed to 
-`usr/local/include`. The `<tensorflow-root>` argument should be the root of the TensorFlow repository. The optional `<cmake-path>` argument specifies the path to
-copy the required CMake modules to (this should be your CMake modules directory); if left blank, the current directory will be used. This script installs Eigen
-and copies `FindEigen.cmake` to the specified directory.  Add the following to your `CMakeLists.txt`:
+### Eigen: Installing Locally
+Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<install-dir> <download-dir>]`. The `install` command specifies that Eigen is to be installed to 
+a directory. The `<tensorflow-root>` argument should be the root of the TensorFlow repository. The optional `<install-dir>` argument allows you to specify the installation directory;
+this defaults to `/usr/local` but may be changed to avoid other versions.  The `<download-dir` argument specifies the directory where Eigen will be download and extracted; this defaults
+to the current directory.  To generate the needed CMake files for your project, execute the script as follows: `eigen.sh generate installed [<cmake-dir> <install-dir>]`.  The `generate` 
+command specifies that the required CMake files are to be generated and placed in `<cmake-dir>` (this defaults to the current directory, but generally should your CMake modules directory).
+The optional `<install-dir>` argument specifies the directory Protobuf is installed to.  This defaults to `/usr/local` and should only be specified if you intalled Protobuf to a different 
+directory in the install step.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Eigen
 find_package(Eigen REQUIRED)
@@ -85,10 +90,10 @@ include_directories(${Eigen_INCLUDE_DIRS})
 ```
 
 ### Eigen: Adding as External Dependency
-Execute the `eigen.sh` script as follows: `eigen.sh external <tensorflow-root> [<cmake-path>]`. The `external` command specifies that Eigen should not be 
-installed, but rather treated as an external CMake dependency. The `<tensorflow-root>` argument again should be the root directory of the TensorFlow repository,
-and the optional `<cmake-path>` argument is the location to copy the required CMake modules to (defaults to the current directory).  Two files will be copied
-to the specified directory: `eigen.cmake` and `eigen_VERSION.cmake`. The former contains the specification of the external project, whereas the latter defines
+Execute the `eigen.sh` script as follows: `eigen.sh generate external <tensorflow-root> [<cmake-dir>]`. The `external` command specifies that Eigen is not
+installed, but rather should be treated as an external CMake dependency. The `<tensorflow-root>` argument again should be the root directory of the TensorFlow repository,
+and the optional `<cmake-dir>` argument is the location to copy the required CMake modules to (defaults to the current directory).  Two files will be copied
+to the specified directory: `Eigen.cmake` and `Eigen_VERSION.cmake`. The former contains the specification of the external project, whereas the latter defines
 exactly what version of Eigen to obtain.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Eigen
@@ -97,18 +102,20 @@ add_dependencies(<EXECUTABLE_NAME> Eigen)
 ```
 
 
-### Protobuf: Installing to `/usr/local`
-Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-path>]`. The arguments are identical to those described in the Eigen
-section above.  Add the following to your `CMakeLists.txt`:
+### Protobuf: Installing Locally
+Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-dir>]`. The arguments are identical to those described in the Eigen
+section above.  Gnerate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
+CMake provides us with a `FindProobuf.cmake` module, but we will use our own, since we mmust specify teh directory Protobuf was installed to.  Add the following to 
+your `CMakeLists.txt`:
 ```CMake
-# Protobuf - CMake provides the FindProtobuf module
+# Protobuf
 find_package(Protobuf REQUIRED)
-include_directories(${PROTOBUF_INCLUDE_DIRS})
-target_link_libraries(<EXECUTABLE_NAME> ${PROTOBUF_LIBRARIES})
+include_directories(${Protobuf_INCLUDE_DIRS})
+target_link_libraries(<EXECUTABLE_NAME> ${Protobuf_LIBRARIES})
 ```
 
 ### Protobuf: Adding as External Dependency
-Execute the `protobuf.sh` script as follows: `protobuf.sh external <tensorflow-root> [<cmake-path>]`. The arguments are also identical to those described in the Eigen
+Execute the `protobuf.sh` script as follows: `protobuf.sh generate external <tensorflow-root> [<cmake-dir>]`. The arguments are also identical to those described in the Eigen
 section above.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Protobuf

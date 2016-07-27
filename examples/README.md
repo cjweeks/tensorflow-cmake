@@ -9,6 +9,7 @@ These two projects are compatble with TensorFlow at commit `fc9162975e52978d3af3
 this version:
 ```bash
 git clone https://github.com/tensorflow/tensorflow
+cd tensorflow
 git reset --hard fc9162975e52978d3af38549b570cc3cc5f0ab66
 ```
 

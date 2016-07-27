@@ -16,7 +16,7 @@ print_usage () {
 |
 |     Generates the cmake files for the given installation of tensorflow
 |     and writes them to <cmake-dir>.  If 'generate installed' is executed,
-|     <install-dir> corresponds to the directory eigen was installed to; 
+|     <install-dir> corresponds to the directory Eigen was installed to; 
 |     defaults to /usr/local.
 |
 | --> ${0} install <tensorflow-source-dir> [<install-dir> <download-dir>]
