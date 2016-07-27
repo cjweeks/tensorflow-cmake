@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 find_package(TensorFlow REQUIRED)
 
 # Location where external projects will be downloaded
-set(DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src" CACHE PATH "Location where external projects will be downloaded.")
+set(DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src" CACHE PATH "Location where external projects will be downloaded")
 mark_as_advanced(DOWNLOAD_LOCATION)
 
 include(Protobuf)

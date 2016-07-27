@@ -108,7 +108,7 @@ Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorfl
 section above.  
 
 Generate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
-Two files will be copied to the specified directory: `FindProtobuf.cmake` and `Protobuf_VERSION.cmake`. CMake provides us with a `FindProobuf.cmake`
+Two files will be copied to the specified directory: `FindProtobuf.cmake` and `Protobuf_VERSION.cmake`. CMake provides us with a `FindProtobuf.cmake`
 module, but we will use our own, since we must specify the directory Protobuf was installed to. Add the following to your `CMakeLists.txt`:
 ```CMake
 # Protobuf
@@ -128,7 +128,7 @@ add_dependencies(<EXECUTABLE_NAME> Protobuf)
 
 ## Step 3: Configure the CMake Project
 
-Edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most cmake programs):
+Edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most CMake programs):
 ```CMake
 list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
 # replace <CMAKE_MODULE_DIR> with your path
@@ -138,7 +138,7 @@ If *either* Protobuf or Eigen was added as an external dependency, add the follo
 ```CMake
 # specify download location
 set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
-     CACHE PATH "Location where external projects will be downloaded.")
+     CACHE PATH "Location where external projects will be downloaded")
 mark_as_advanced(DOWNLOAD_LOCATION)
 ```
 
