@@ -1,12 +1,12 @@
 # tensorflow-cmake
-Integrate TensorFlow with CMake projects effortlessly
+Integrate TensorFlow with CMake projects effortlessly.
 
 ## TensorFlow
 [TensorFlow](https://www.tensorflow.org/) is an amazing tool for machine learning and intelligence using computational graphs.
 TensorFlow includes APIs for both Python and C++, although the C++ API is slightly less documented.  However, the most standard
 way to integrate C++ projects with TensorFlow is to build the project *inside* the TensorFlow repository, yielding a massive binary.
 Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build such projects. This document and the code in this
-repository will allow one integrate TensorFlow with CMake projects without producing a large binary.
+repository will allow one to integrate TensorFlow with CMake projects without producing a large binary.
 
 Note: The instructions here correspond to an Ubuntu Linux environment; although some commands may differ for other operating systems and distributions, the general ideas are identical.
 
@@ -32,7 +32,7 @@ cc_binary(
     ],
 )
 ```
-Install:
+Build library and copy to `/usr/local/lib`:
 ```bash
 ./configure      # Note that this requires user input
 bazel build tensorflow:libtensorflow_all.so
@@ -67,21 +67,24 @@ However, specific versions are required, and these may clash with currently inst
 provided:
 
 - Install the packages to a directory on your computer, which will overwrite / clash with any previous versions installed in that directory (but allow multiple projects to reference them).
-The default directory is `/usr/local/`, but any may be specified to avoid clashing. *This is the recommended option.*
+The default directory is `/usr/local`, but any may be specified to avoid clashing. *This is the recommended option.*
 - Add the packages as external dependencies, allowing CMake to download and build them inside the project directory, not affecting any current versions.  This will never result in clashing,
 but the build process of your project may be lengthened.
 
 Choose the option that best fits your needs; you may mix these options as well, installing one to `/usr/local`, while keeping the other confined in the current project.  In the following 
-instructions, be sure to replace `<EXECUTABLE_NAME>` with the name of your executable.
+instructions, be sure to replace `<EXECUTABLE_NAME>` with the name of your executable.  Additionally, all CMake files should generally be placed in your CMake modules directory, which is
+commonly `<PROJECT_ROOT>/cmake/Modules`.
 
 ### Eigen: Installing Locally
 Execute the `eigen.sh` script as follows: `sudo eigen.sh install <tensorflow-root> [<install-dir> <download-dir>]`. The `install` command specifies that Eigen is to be installed to 
-a directory. The `<tensorflow-root>` argument should be the root of the TensorFlow repository. The optional `<install-dir>` argument allows you to specify the installation directory;
+a directory. The `<tensorflow-root>` argument should be the root of the TensorFlow repository.  The optional `<install-dir>` argument allows you to specify the installation directory;
 this defaults to `/usr/local` but may be changed to avoid other versions.  The `<download-dir` argument specifies the directory where Eigen will be download and extracted; this defaults
-to the current directory.  To generate the needed CMake files for your project, execute the script as follows: `eigen.sh generate installed [<cmake-dir> <install-dir>]`.  The `generate` 
-command specifies that the required CMake files are to be generated and placed in `<cmake-dir>` (this defaults to the current directory, but generally should your CMake modules directory).
-The optional `<install-dir>` argument specifies the directory Protobuf is installed to.  This defaults to `/usr/local` and should only be specified if you installed Protobuf to a different 
-directory in the install step.  Add the following to your `CMakeLists.txt`:
+to the current directory.  
+
+To generate the needed CMake files for your project, execute the script as follows: `eigen.sh generate installed [<cmake-dir> <install-dir>]`.  The `generate` command specifies that the 
+required CMake files are to be generated and placed in `<cmake-dir>` (this defaults to the current directory, but generally should your CMake modules directory).  The optional `<install-dir>`
+argument specifies the directory Protobuf is installed to.  This defaults to `/usr/local` and should directly correspond to the install directory specified when installing above.
+Add the following to your `CMakeLists.txt`:
 ```CMake
 # Eigen
 find_package(Eigen REQUIRED)
@@ -103,7 +106,9 @@ add_dependencies(<EXECUTABLE_NAME> Eigen)
 
 ### Protobuf: Installing Locally
 Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-dir>]`. The arguments are identical to those described in the Eigen
-section above.  Generate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
+section above.  
+
+Generate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
 CMake provides us with a `FindProobuf.cmake` module, but we will use our own, since we must specify the directory Protobuf was installed to.  Add the following to 
 your `CMakeLists.txt`:
 ```CMake
