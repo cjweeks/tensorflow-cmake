@@ -6,23 +6,23 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(SOURCE_FILES main.cc)
 set(EXECUTABLE external-project)
 
-add_executable(${EXECUTABLE} ${SOURCE_FILES})
-
 # Add modules
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
 
-# TensorFlow
 find_package(TensorFlow REQUIRED)
-include_directories(${TensorFlow_INCLUDE_DIRS})
-target_link_libraries(${EXECUTABLE} ${TensorFlow_LIBRARIES})
 
-# External dependencies (Eigen and Protobuf)
 # Location where external projects will be downloaded
-set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
-  CACHE PATH "Location where external projects will be downloaded.")
+set(DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src" CACHE PATH "Location where external projects will be downloaded.")
 mark_as_advanced(DOWNLOAD_LOCATION)
 
 include(Protobuf)
 include(Eigen)
 
-add_dependencies(${EXECUTABLE} Eigen Protobuf)
+set(INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS})
+set(LIBRARIES ${TensorFlow_LIBRARIES})
+set(DEPENDENCIES Eigen Protobuf)
+
+include_directories(${INCLUDE_DIRS})
+add_executable(${EXECUTABLE} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE} ${LIBRARIES})
+add_dependencies(${EXECUTABLE} ${DEPENDENCIES})

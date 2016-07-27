@@ -81,7 +81,7 @@ URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 HASH="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
 ARCHIVE_HASH="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
 
-echo "Finding eigen version in ${TF_DIR}..."
+echo "Finding Eigen version in ${TF_DIR}..."
 EIGEN_TEXT=$(grep -Pzro ${EIGEN_REGEX} ${TF_DIR}) || fail
 
 EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL}) || fail
@@ -123,22 +123,22 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
+    # output Eigen information to file
+    EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
+    echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
+    echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
+    echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT} || fail
+    echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
+    echo "Eigen_VERSION.cmake written to ${CMAKE_DIR}"
+    # perform specific operations regarding installation
     if [ "${GENERATE_MODE}" == "external" ]; then
-	# output Eigen information to file
-	EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
-	echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
-	echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
-	echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT} || fail
-	echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
 	cp ${SCRIPT_DIR}/Eigen.cmake ${CMAKE_DIR} || fail
 	echo "Wrote Eigen_VERSION.cmake and Eigen.cmake to ${CMAKE_DIR}"
     elif [ "${GENERATE_MODE}" == "installed" ]; then
-	# copy eigen file to cmake directory
 	cp ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR} || fail
 	echo "FindEigen.cmake copied to ${CMAKE_DIR}"
     fi
 fi
-
 
 echo "Done"
 
