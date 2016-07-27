@@ -25,6 +25,7 @@ Enter the cloned repository, and append the following to the `tensorflow/BUILD` 
 cc_binary(
     name = "libtensorflow_all.so",
     linkshared = 1,
+    linkopts = [ "-Wl,--version-script=tensorflow/tf_version_script.lds" ],
     deps = [
         "//tensorflow/cc:cc_ops",
         "//tensorflow/core:framework_internal",
