@@ -35,8 +35,8 @@ cc_binary(
 Install:
 ```bash
 ./configure      # Note that this requires user input
-bazel build tensorflow:libtensorflow_full.so
-sudo cp bazel-bin/tensorflow/libtensorflow_full.so /usr/local/lib
+bazel build tensorflow:libtensorflow_all.so
+sudo cp bazel-bin/tensorflow/libtensorflow_all.so /usr/local/lib
 ```
 Copy source to `/usr/local/include/google` and remove unneeded items
 ```bash
