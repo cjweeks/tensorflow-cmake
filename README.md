@@ -1,19 +1,18 @@
-# tensorflow-cmake (currently not finished)
-Integrate TnesorFlow with projects that use cmake without having to build inside the TensorFlow repository.
+# tensorflow-cmake
+Integrate TensorFlow with CMake projects effortlessly
 
 ## TensorFlow
 [TensorFlow](https://www.tensorflow.org/) is an amazing tool for machine learning and intelligence using computational graphs.
 TensorFlow includes APIs for both Python and C++, although the C++ API is slightly less documented.  However, the most standard
 way to integrate C++ projects with TensorFlow is to build the project *inside* the TensorFlow repository, yielding a massive binary.
 Additionally, [Bazel](http://www.bazel.io/) is the only certified way to build such projects. This document and the code in this
-reoository will allow one to build a C++ project using cmake without needing to build inside the TensorFlow repsoitory or generate a
-large binary.
+repository will allow one integrate TensorFlow with CMake projects without producing a large binary.
 
 Note: The instructions here correspond to an Ubuntu Linux environment; although some commands may differ for other operating systems and distributions, the general ideas are identical.
 
 ## Step 1: Install TensorFlow
-Donwload TensorFlow from its git repository: `git clone https://github.com/tensorflow/tensorflow`
-Install Bazel and Python dependencies as wellas some packages reuired for Protobuf: 
+Download TensorFlow from its git repository: `git clone https://github.com/tensorflow/tensorflow`
+Install Bazel and Python dependencies as well as some packages required for Protobuf: 
 ```bash
 sudo apt-get install bazel                                          # Bazel
 sudo apt-get install python-numpy swig python-dev python-wheel      # TensorFlow
@@ -81,7 +80,7 @@ a directory. The `<tensorflow-root>` argument should be the root of the TensorFl
 this defaults to `/usr/local` but may be changed to avoid other versions.  The `<download-dir` argument specifies the directory where Eigen will be download and extracted; this defaults
 to the current directory.  To generate the needed CMake files for your project, execute the script as follows: `eigen.sh generate installed [<cmake-dir> <install-dir>]`.  The `generate` 
 command specifies that the required CMake files are to be generated and placed in `<cmake-dir>` (this defaults to the current directory, but generally should your CMake modules directory).
-The optional `<install-dir>` argument specifies the directory Protobuf is installed to.  This defaults to `/usr/local` and should only be specified if you intalled Protobuf to a different 
+The optional `<install-dir>` argument specifies the directory Protobuf is installed to.  This defaults to `/usr/local` and should only be specified if you installed Protobuf to a different 
 directory in the install step.  Add the following to your `CMakeLists.txt`:
 ```CMake
 # Eigen
@@ -104,8 +103,8 @@ add_dependencies(<EXECUTABLE_NAME> Eigen)
 
 ### Protobuf: Installing Locally
 Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-dir>]`. The arguments are identical to those described in the Eigen
-section above.  Gnerate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
-CMake provides us with a `FindProobuf.cmake` module, but we will use our own, since we mmust specify teh directory Protobuf was installed to.  Add the following to 
+section above.  Generate the required files as follows: `protobuf.sh generate installed [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
+CMake provides us with a `FindProobuf.cmake` module, but we will use our own, since we must specify the directory Protobuf was installed to.  Add the following to 
 your `CMakeLists.txt`:
 ```CMake
 # Protobuf
@@ -131,7 +130,7 @@ list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
 # replace <CMAKE_MODULE_DIR> with your path
 # The most common path is ${PROJECT_SOURCE_DIR}/cmake/Modules
 ```
-If *either* Protobuf or Eigen was added as an external dependency, add the follwing to your `CMakeLists.txt`:
+If *either* Protobuf or Eigen was added as an external dependency, add the following to your `CMakeLists.txt`:
  
 ```CMake
 # specify download location
