@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+
 SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
+
+################################### Functions ###################################
 
 # Prints an error message and exits with an error code of 1
 fail () {
@@ -25,6 +28,77 @@ print_usage () {
 |     and installs it to <instal-dir> (defaults to /usr/local).
 |"
 }
+
+# Tries to find eigen using the given method
+# Methods begin at 0 and increase as integers.
+# If this function is called with a method that
+# does not exist, it will print an error message
+# and exit the program.
+find_eigen () {
+    # Check for argument
+    if [ -z "${1}" ]; then
+	fail
+    fi
+    # locate eigen archive in tensorflow directory
+    ANY="[^\)]*"
+    ANY_NO_QUOTES="[^\)\\\"]*"
+    ANY_HEX="[a-fA-F0-9]*"
+    ARCHIVE_HEADER="native.new_http_archive\(\s*"
+    NAME_START="name\s*=\s*\\\""
+    QUOTE_START="\s*=\s*\\\""
+    QUOTE_END="\\\"\s*,\s*"
+    FOOTER="\)"
+    EIGEN_NAME="${NAME_START}eigen_archive${QUOTE_END}"
+    EIGEN_REGEX="${ARCHIVE_HEADER}${ANY}${EIGEN_NAME}${ANY}${FOOTER}"
+    
+    echo "Finding Eigen version in ${TF_DIR} using method ${1}..."
+    # check specified format
+    if [ ${1} -eq 0 ]; then
+	EIGEN_VERSION_LABEL="eigen_version"
+	EIGEN_ARCHIVE_HASH_REGEX="${EIGEN_VERSION_LABEL}\s*=\s*\\\"${ANY_HEX}\\\"\s*"
+	EIGEN_HASH_REGEX="eigen_sha256\s*=\s*\\\"${ANY_HEX}\\\"\s*"
+	HASH_SED="s/\s*eigen_sha256${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
+	ARCHIVE_HASH_SED="s/\s*${EIGEN_VERSION_LABEL}${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
+	
+	
+	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
+	EIGEN_ARCHIVE_TEXT=$(grep -Pzo ${EIGEN_ARCHIVE_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+	EIGEN_HASH_TEXT=$(grep -Pzo ${EIGEN_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+
+	# note that we must determine the eigen archive hash before we determine the URL
+	EIGEN_HASH=$(echo "${EIGEN_HASH_TEXT}" | sed -n ${HASH_SED})
+	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_ARCHIVE_TEXT}" | sed -n ${ARCHIVE_HASH_SED})
+
+	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)\\\"\s*+\s*${EIGEN_VERSION_LABEL}\s*+\s*\\\"\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1${EIGEN_ARCHIVE_HASH}\2/p"
+	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
+    elif [ ${1} -eq 1 ]; then
+	# find eigen without 'eigen_version' or 'eigen_sha256'
+	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+	HASH_SED="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
+	ARCHIVE_HASH_SED="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
+	
+	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
+	EIGEN_HASH=$(echo "${EIGEN_TEXT}" | sed -n ${HASH_SED})
+	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_URL}" | sed -n ${ARCHIVE_HASH_SED})
+    else
+	# no methods left to try
+	echo "Failure: could not find Eigen version in ${TF_DIR}"
+	exit 1
+    fi
+    # check if all variables were defined and are unempty
+    if [ -z "${EIGEN_URL}" ] || [ -z "${EIGEN_HASH}" ] || [ -z "${EIGEN_ARCHIVE_HASH}" ]; then
+	# unset varibales and return 1 (not found)
+	unset EIGEN_URL
+	unset EIGEN_HASH
+	unset EIGEN_ARCHIVE_HASH
+	return 1
+    fi
+    # return found
+    return 0 
+}
+
+################################### Script ###################################
 
 # validate and assign input
 if [ "$#" -lt 2 ]; then
@@ -68,36 +142,14 @@ elif [ "${MODE}" == "generate" ]; then
 	INSTALL_DIR="${5}"
     fi
 fi
-    
 
-# locate eigen archive in tensorflow directory
-ANY="[^\)]*"
-ANY_NO_QUOTES="[^\)\\\"]*"
-ANY_HEX="[a-fA-F0-9]*"
-ARCHIVE_HEADER="native.new_http_archive\(\s*"
-NAME_START="name\s*=\s*\\\""
-QUOTE_START="\s*=\s*\\\""
-QUOTE_END="\\\"\s*,\s*"
-FOOTER="\)"
-EIGEN_NAME="${NAME_START}eigen_archive${QUOTE_END}"
-
-EIGEN_REGEX="${ARCHIVE_HEADER}${ANY}${EIGEN_NAME}${ANY}${FOOTER}"
-
-URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
-HASH="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
-ARCHIVE_HASH="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
-
-echo "Finding Eigen version in ${TF_DIR}..."
-EIGEN_TEXT=$(grep -Pzro ${EIGEN_REGEX} ${TF_DIR}) || fail
-
-EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL}) || fail
-EIGEN_HASH=$(echo "${EIGEN_TEXT}" | sed -n ${HASH}) || fail
-EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_URL}" | sed -n ${ARCHIVE_HASH}) || fail
-
-if [ -z "${EIGEN_URL}" ] || [ -z "${EIGEN_HASH}" ] || [ -z "${EIGEN_ARCHIVE_HASH}" ]; then
-    echo "Failure: Could not find all required strings in ${TF_DIR}"
-    exit 1
-fi
+# try to find eigen information
+N=0
+find_eigen ${N}
+while [ $? -eq 1 ]; do
+    N=$((N+1))
+    find_eigen $N
+done
 
 # print information
 echo
@@ -155,4 +207,4 @@ elif [ "${MODE}" == "generate" ]; then
 fi
 
 echo "Done"
-
+exit 0
