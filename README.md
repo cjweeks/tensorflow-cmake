@@ -11,9 +11,13 @@ repository will allow one to integrate TensorFlow with CMake projects without pr
 Note: The instructions here correspond to an Ubuntu Linux environment; although some commands may differ for other operating systems and distributions, the general ideas are identical.
 
 ## Step 1: Install TensorFlow
-Follow the [instructions](http://www.bazel.io/docs/install.html) for installing Bazel.  Install dependencies for Protobuf:
-`sudo apt-get install autoconf automake libtool curl make g++ unzip`. Download TensorFlow from its git repository:
-`git clone https://github.com/tensorflow/tensorflow`. Enter the cloned repository, and append the following to the `tensorflow/BUILD` file:
+Follow the [instructions](http://www.bazel.io/docs/install.html) for installing Bazel.  Install dependencies for Protobuf and clone
+TensorFlow from its git repository:
+```bash
+sudo apt-get install autoconf automake libtool curl make g++ unzip  # Protobuf
+git clone https://github.com/tensorflow/tensorflow                  # TensorFlow
+```
+Enter the cloned repository, and append the following to the `tensorflow/BUILD` file:
 ```bash
 # Added build rule
 cc_binary(
