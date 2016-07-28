@@ -131,12 +131,12 @@ add_dependencies(<EXECUTABLE_NAME> Protobuf)
 Edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most CMake programs):
 ```CMake
 list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
-# replace <CMAKE_MODULE_DIR> with your path
+# Replace <CMAKE_MODULE_DIR> with your path
 # The most common path is ${PROJECT_SOURCE_DIR}/cmake/Modules
 ```
 If *either* Protobuf or Eigen was added as an external dependency, add the following to your `CMakeLists.txt`:
 ```CMake
-# specify download location
+# Specify download location
 set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
         CACHE PATH "Location where external projects will be downloaded")
 mark_as_advanced(DOWNLOAD_LOCATION)
@@ -146,12 +146,12 @@ The projects in the `examples/` directory demonstrate the correct usage of these
 
 ## Troubleshooting
 
-### Path Error
+### Compiler Path Build Error
 If Bazel fails to build the TensorFlow library, stating `error: Could not find compiler "gcc" in PATH`, you may have to execute the following:
 ```bash
-bazel clean                                   # clean project
-export CC="/usr/bin/gcc"                      # set location of C compiler
-export CXX="/usr/bin/g++"                     # set location of C++ compiler
-bazel build tensorflow:libtensorflow_all.so   # rebuild project
+bazel clean                                   # Clean project
+export CC="/usr/bin/gcc"                      # Set location of C compiler
+export CXX="/usr/bin/g++"                     # Set location of C++ compiler
+bazel build tensorflow:libtensorflow_all.so   # Rebuild project
 ```
 
