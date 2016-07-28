@@ -14,7 +14,7 @@ Note: The instructions here correspond to an Ubuntu Linux environment; although 
 Follow the [instructions](http://www.bazel.io/docs/install.html) for installing Bazel.  Install dependencies for Protobuf and clone
 TensorFlow from its git repository:
 ```bash
-sudo apt-get install autoconf automake libtool curl make g++ unzip  # Protobuf
+sudo apt-get install autoconf automake libtool curl make g++ unzip  # Protobuf Dependencies
 git clone https://github.com/tensorflow/tensorflow                  # TensorFlow
 ```
 Enter the cloned repository, and append the following to the `tensorflow/BUILD` file:
