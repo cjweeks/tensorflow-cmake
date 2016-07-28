@@ -108,10 +108,8 @@ if [ ${#} -lt 2 ]; then
     exit 1
 fi
 # Determine mode
-if [ "${1}" == "install" ]; then
-    MODE="install"
-elif [ "${1}" == "generate" ]; then
-    MODE="generate"
+if [ "${1}" == "install" ] || [ "${1}" == "generate" ]; then
+    MODE="${1}"
 else
     print_usage
     exit 1
@@ -119,7 +117,7 @@ fi
 
 # get arguments
 if [ "${MODE}" == "install" ]; then
-    TF_DIR=${2}
+    TF_DIR="${2}"
     INSTALL_DIR="/usr/local"
     DOWNLOAD_DIR="."
     if [ ${#} -gt 2 ]; then
