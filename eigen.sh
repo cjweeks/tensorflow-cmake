@@ -150,7 +150,7 @@ N=0
 find_eigen ${N}
 while [ $? -eq 1 ]; do
     N=$((N+1))
-    find_eigen $N
+    find_eigen ${N}
 done
 
 # print information
