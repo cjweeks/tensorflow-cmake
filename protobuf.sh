@@ -142,3 +142,4 @@ elif [ "${MODE}" == "generate" ]; then
     fi
 fi
 echo "Done"
+exit 0
