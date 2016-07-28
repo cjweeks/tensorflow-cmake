@@ -68,8 +68,10 @@ find_eigen () {
 	# note that we must determine the eigen archive hash before we determine the URL
 	EIGEN_HASH=$(echo "${EIGEN_HASH_TEXT}" | sed -n ${HASH_SED})
 	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_ARCHIVE_TEXT}" | sed -n ${ARCHIVE_HASH_SED})
-
-	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)\\\"\s*+\s*${EIGEN_VERSION_LABEL}\s*+\s*\\\"\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1${EIGEN_ARCHIVE_HASH}\2/p"
+	# the following varibale is split into two parts for readability
+	URL_SED_1="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)\\\"\s*+\s*${EIGEN_VERSION_LABEL}\s*+\s*\\\""
+	URL_SED_2="\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1${EIGEN_ARCHIVE_HASH}\2/p"
+	URL_SED=${URL_SED_1}${URL_SED_2}
 	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
     elif [ ${1} -eq 1 ]; then
 	# find eigen without 'eigen_version' or 'eigen_sha256'
