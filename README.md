@@ -150,7 +150,7 @@ The projects in the `examples/` directory demonstrate the correct usage of these
 If Bazel fails to build the TensorFlow library, stating `error: Could not find compiler "gcc" in PATH`, you may have to execute the following:
 ```bash
 bazel clean                                   # clean project
-export CC="/usr/bin/gcc"                      # Set location of C compiler
+export CC="/usr/bin/gcc"                      # set location of C compiler
 export CXX="/usr/bin/g++"                     # set location of C++ compiler
 bazel build tensorflow:libtensorflow_all.so   # rebuild project
 ```
