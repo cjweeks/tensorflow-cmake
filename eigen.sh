@@ -173,7 +173,8 @@ if [ "${MODE}" == "install" ]; then
     # create build directory and build
     mkdir build || fail
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DINCLUDE_INSTALL_DIR=${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH} .. || fail
+    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}\
+	  -DINCLUDE_INSTALL_DIR=${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH} .. || fail
     make || fail
     make install || fail
     echo "Installation complete"
