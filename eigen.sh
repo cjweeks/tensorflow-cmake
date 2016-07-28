@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
 
 ################################### Functions ###################################
 
@@ -103,7 +103,7 @@ find_eigen () {
 ################################### Script ###################################
 
 # validate and assign input
-if [ "$#" -lt 2 ]; then
+if [ ${#} -lt 2 ]; then
     print_usage
     exit 1
 fi
@@ -119,13 +119,13 @@ fi
 
 # get arguments
 if [ "${MODE}" == "install" ]; then
-    TF_DIR="${2}"
+    TF_DIR=${2}
     INSTALL_DIR="/usr/local"
     DOWNLOAD_DIR="."
-    if [ "$#" -gt 2 ]; then
+    if [ ${#} -gt 2 ]; then
        INSTALL_DIR="${3}"
     fi
-    if [ "$#" -gt 3 ]; then
+    if [ ${#} -gt 3 ]; then
 	DOWNLOAD_DIR="${4}"
     fi
 elif [ "${MODE}" == "generate" ]; then
@@ -136,11 +136,11 @@ elif [ "${MODE}" == "generate" ]; then
     fi
     TF_DIR="${3}"
     CMAKE_DIR="."
-    if [ "$#" -gt 3 ]; then
+    if [ ${#} -gt 3 ]; then
 	CMAKE_DIR="${4}"
     fi
     INSTALL_DIR="/usr/local"
-    if [ "${GENERATE_MODE}" == "installed" ] && [ "$#" -gt 4 ]; then
+    if [ "${GENERATE_MODE}" == "installed" ] && [ ${#} -gt 4 ]; then
 	INSTALL_DIR="${5}"
     fi
 fi
@@ -148,7 +148,7 @@ fi
 # try to find eigen information
 N=0
 find_eigen ${N}
-while [ $? -eq 1 ]; do
+while [ ${?} -eq 1 ]; do
     N=$((N+1))
     find_eigen ${N}
 done
@@ -184,13 +184,6 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
-     # locate eigen in INSTALL_DIR
-    if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then
-       echo "Found Eigen in ${INSTALL_DIR}"
-    else
-	echo "Failure: Could not find Eigen in ${INSTALL_DIR}"
-	exit 1
-    fi
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$(cd "$(dirname "$0")"; pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
 
 # Prints an error message and exits with an error code of 1
 fail () {
@@ -29,15 +29,13 @@ print_usage () {
 
 
 # validate and assign input
-if [ "$#" -lt 2 ]; then
+if [ ${#} -lt 2 ]; then
     print_usage
     exit 1
 fi
 # Determine mode
-if [ "${1}" == "install" ]; then
-    MODE="install"
-elif [ "${1}" == "generate" ]; then
-    MODE="generate"
+if [ "${1}" == "install" ] || [ "${1}" == "generate" ]; then
+    MODE="${1}"
 else
     print_usage
     exit 1
@@ -48,10 +46,10 @@ if [ "${MODE}" == "install" ]; then
     TF_DIR="${2}"
     INSTALL_DIR="/usr/local"
     DOWNLOAD_DIR="."
-    if [ "$#" -gt 2 ]; then
+    if [ ${#} -gt 2 ]; then
        INSTALL_DIR="${3}"
     fi
-    if [ "$#" -gt 3 ]; then
+    if [ ${#} -gt 3 ]; then
 	DOWNLOAD_DIR="${4}"
     fi
 elif [ "${MODE}" == "generate" ]; then
@@ -62,11 +60,11 @@ elif [ "${MODE}" == "generate" ]; then
     fi
     TF_DIR="${3}"
     CMAKE_DIR="."
-    if [ "$#" -gt 3 ]; then
+    if [ ${#} -gt 3 ]; then
 	CMAKE_DIR="${4}"
     fi
     INSTALL_DIR="/usr/local"
-    if [ "${GENERATE_MODE}" == "installed" ] && [ "$#" -gt 4 ]; then
+    if [ "${GENERATE_MODE}" == "installed" ] && [ ${#} -gt 4 ]; then
 	INSTALL_DIR="${5}"
     fi
 fi
@@ -88,7 +86,7 @@ COMMIT="s/\s*commit${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
 REMOTE="s/\s*remote${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 
 echo "Finding protobuf information in ${TF_DIR}..."
-PROTOBUF_TEXT=$(grep -Pzro ${PROTOBUF_REGEX} ${TF_DIR}) || fail
+PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
 
 PROTOBUF_COMMIT=$(echo "${PROTOBUF_TEXT}" | sed -n ${COMMIT}) || fail
 PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${REMOTE}) || fail
@@ -121,13 +119,6 @@ if [ "${MODE}" == "install" ]; then
     sudo ldconfig || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
-    # locate protobuf in INSTALL_DIR
-    if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
-	echo "Found Protobuf in ${INSTALL_DIR}"
-    else
-	echo "Failure: Could not find Protobuf in ${INSTALL_DIR}"
-	exit 1
-    fi
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"	
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
     echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT} || fail
