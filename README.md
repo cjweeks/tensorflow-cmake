@@ -143,3 +143,14 @@ mark_as_advanced(DOWNLOAD_LOCATION)
 ```
 
 The projects in the `examples/` directory demonstrate the correct usage of these instructions.
+
+## Troubleshooting
+
+### Path Error
+If Bazel fails to build the TensorFlow library, stating `error: Could not find compiler "gcc" in PATH`, you may have to execute the following:
+```bash
+bazel clean
+export CC="/usr/bin/gcc"
+export CXX="/usr/bin/g++"
+```
+
