@@ -5,13 +5,13 @@ directory contains a project set up using Eigen and Protobuf as exteral dependen
 inside the `external/` directory of the project wwhen built).  The `install-project`, however, requires you to
 install both Eigen and Protobuf on your machine before building.
 
-Note: The `FindTensorFlow.cmake` module has already been copied into these projects for cimplicity; this must be
+Note: The `FindTensorFlow.cmake` module has already been copied into these projects for simplicity; this must be
 done manually for other projects.
 
 ## Configuring
-The following instructions assume you are in the root directory of this repository, the directory
-structure for the projects exist, main.cc and graph.pb are already positioned, and the TensorFlow repository is located
-in `~/git/tensorflow`.  The steps for generating the projects are as follows:
+The following instructions assume you are in the root directory of this repository, no alterations have been made
+to the directory sructure, and the TensorFlow repository is located in `~/git/tensorflow`.  The steps for generating
+the projects are as follows:
 
 ### External-Project
 ```bash
@@ -22,13 +22,13 @@ in `~/git/tensorflow`.  The steps for generating the projects are as follows:
 
 ### Install-Project
 First, install Eigen and Protobuf (skip if you have already done this).  Both libraries are installed to `/usr/local` in this
-exanple; if you have installed them elsewhere, simply substitute your directory:
+exanple; if you wish to install them elsewhere, simply substitute your directory:
 ```bash
 sudo ./eigen.sh install ~/git/tensorflow /usr/local
 sudo ./protobuf.sh install ~/git/tensorflow /usr/local
 ```
 
-Generate the required CMake files (be sure to alter the name of your install directory if it is not `/usr/local`):
+Generate the required CMake files (be sure to substitute the name of your install directory if it is not `/usr/local`):
 ```bash
 # This will generate / copy FindEigen.cmake, Eigen_VERSION.cmake, FindProtobuf.cmake, and Protobuf_VERSION.cmake
 ./eigen.sh generate installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
