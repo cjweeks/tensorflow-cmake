@@ -36,7 +36,7 @@ Generate the required CMake files (be sure to substitute the name of your instal
 ```
 
 ## Building and Running
-To build either of theese projects, create a directory inside the project to build from; then call cmake
+To build either of these projects, create a directory inside the project to build from; then call CMake
 from that directory:
 
 ```bash
