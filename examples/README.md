@@ -18,7 +18,6 @@ in `~/git/tensorflow`.  The steps for generating the projects are as follows:
 # This will generate / copy Eigen.cmake, Eigen_VERSION.cmake, Protobuf.cmake, and Protobuf_VERSION.cmake
 ./eigen.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
 ./protobuf.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
-cp FindTensorFlow.cmake examples/external-project/cmake/Modules 
 ```
 
 ### Install-Project
