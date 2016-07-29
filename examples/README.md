@@ -1,16 +1,39 @@
 # Examples
 
 This directory contains two simple TensorFlow projects that may be built using cmake. The `external-project`
-directory contains a project set up using Eigen and Protobuf as exteral dependencies (they wil be donwloaded
-inside the external/ directory of the project wwhen built).  The `install-project`, however, requires you to
+directory contains a project set up using Eigen and Protobuf as exteral dependencies (they will be donwloaded
+inside the `external/` directory of the project wwhen built).  The `install-project`, however, requires you to
 install both Eigen and Protobuf on your machine before building.
 
-These two projects are compatble with TensorFlow at commit `fc9162975e52978d3af38549b570cc3cc5f0ab66`.  To get
-this version:
+Note: The `FindTensorFlow.cmake` module has already been copied into these projects for cimplicity; this must be
+done manually for other projects.
+
+## Configuring
+The following instructions assume you are in the root directory of this repository, the directory
+structure for the projects exist, main.cc and graph.pb are already positioned, and the TensorFlow repository is located
+in `~/git/tensorflow`.  The steps for generating the projects are as follows:
+
+### External-Project
 ```bash
-git clone https://github.com/tensorflow/tensorflow
-cd tensorflow
-git reset --hard fc9162975e52978d3af38549b570cc3cc5f0ab66
+# This will generate / copy Eigen.cmake, Eigen_VERSION.cmake, Protobuf.cmake, and Protobuf_VERSION.cmake
+./eigen.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
+./protobuf.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
+cp FindTensorFlow.cmake examples/external-project/cmake/Modules 
+```
+
+### Install-Project
+First, install Eigen and Protobuf (skip if you have already done this).  Both libraries are installed to `/usr/local` in this
+exanple; if you have installed them elsewhere, simply substitute your directory:
+```bash
+sudo ./eigen.sh install ~/git/tensorflow /usr/local
+sudo ./protobuf.sh install ~/git/tensorflow /usr/local
+```
+
+Generate the required CMake files (be sure to alter the name of your install directory if it is not `/usr/local`):
+```bash
+# This will generate / copy FindEigen.cmake, Eigen_VERSION.cmake, FindProtobuf.cmake, and Protobuf_VERSION.cmake
+./eigen.sh generate installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
+./protobuf.sh genearte installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
 ```
 
 ## Building and Running
@@ -26,28 +49,3 @@ make
 
 This will create a `bin/` directory in the project root, holding the executable. Run it *from the project root
 directory* like this: `bin/<binary-name>` where `<binary-name>` is either `external-project` or `install-project`.
-
-## Gnerating the Projects
-These projects already have the required CMake modules included.  However, they were generated using the scripts from
-this repository.  The following instructions assume you are in the root directory of this repository, the directory
-structure for theprojects exist, main.cc and graph.pb are already positioned, and the TensorFlow repository is located
-in `~/git/tensorflow`.  The steps for generating the projects are as follows:
-
-### External-Project
-```bash
-# This will generate / copy Eigen.cmake, Eigen_VERSION.cmake, Protobuf.cmake, and Protobuf_VERSION.cmake
-./eigen.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
-./protobuf.sh generate external ~/git/tensorflow examples/external-project/cmake/Modules examples/external-project/cmake/Modules
-cp FindTensorFlow.cmake examples/external-project/cmake/Modules 
-```
-
-### Install-Project
-```bash
-# This will install Protobuf and Eigen to /usr/local (skip if already installed)
-./eigen.sh install ~/git/tensorflow
-./protobuf.sh install ~/git/tensorflow
-# This will copy the required files to the cmake modues directory
-./eigen.sh generate installed ~/git/tensorflow examples/install-project/cmake/Modules
-./protobuf.sh genearte installed ~/git/tensorflow examples/install-project/cmake/Modules
-cp FindTensorFlow.cmake  examples/install-project/cmake/Modules
-```

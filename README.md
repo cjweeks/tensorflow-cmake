@@ -55,7 +55,7 @@ sudo cp bazel-genfiles/tensorflow/cc/ops/*.h  /usr/local/include/google/tensorfl
 ```
 Copy the third party directory:
 ```bash
-sudo cp -r third_party  /usr/local/include/google/tensorflow/
+sudo cp -r third_party /usr/local/include/google/tensorflow/
 sudo rm -r /usr/local/include/google/tensorflow/third_party/py
 sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
 ```
