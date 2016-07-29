@@ -48,3 +48,4 @@ make
 
 This will create a `bin/` directory in the project root, holding the executable. Run it *from the project root
 directory* like this: `bin/<binary-name>` where `<binary-name>` is either `external-project` or `install-project`.
+If the program executes correctly, it will output `Success: 42!`, the result of adding two tensor objects.
