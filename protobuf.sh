@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
-SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
 RED="\033[1;31m"
 YELLOW="\033[1;33m"
 GREEN="\033[0;32m"
@@ -50,12 +49,12 @@ fi
 if [ "${MODE}" == "install" ]; then
     TF_DIR="${2}"
     INSTALL_DIR="/usr/local"
-    DOWNLOAD_DIR="."
+    DOWNLOAD_DIR="${PWD}"
     if [ ${#} -gt 2 ]; then
        INSTALL_DIR="${3}"
     fi
     if [ ${#} -gt 3 ]; then
-	DOWNLOAD_DIR="${4}"
+	DOWNLOAD_DIR="$(cd ${4}; pwd)"
     fi
 elif [ "${MODE}" == "generate" ]; then
     GENERATE_MODE="${2}"
@@ -64,9 +63,9 @@ elif [ "${MODE}" == "generate" ]; then
 	exit 1
     fi
     TF_DIR="${3}"
-    CMAKE_DIR="."
+    CMAKE_DIR="${PWD}"
     if [ ${#} -gt 3 ]; then
-	CMAKE_DIR="${4}"
+	CMAKE_DIR="$(cd ${4}; pwd)"
     fi
     INSTALL_DIR="/usr/local"
     if [ "${GENERATE_MODE}" == "installed" ] && [ ${#} -gt 4 ]; then
@@ -110,19 +109,33 @@ echo
 
 # perform requested action
 if [ "${MODE}" == "install" ]; then
-    # clone protobuf from its git repository
-    cd ${DOWNLOAD_DIR} || fail
-    git clone ${PROTOBUF_URL} || fail
-    cd protobuf || fail
-    git reset --hard ${PROTOBUF_COMMIT} || fail
+    # see if protobuf already exists in DONWLOAD_DIR
+    DOWNLOAD="true"
+    if [ -d "${DOWNLOAD_DIR}/protobuf" ]; then
+	cd ${DOWNLOAD_DIR}/protobuf || fail
+	GIT_REPO_STATUS=$(git rev-parse)
+	if [ GIT_REPO_STATUS -eq 0 ]; then
+	    echo -e "${GREEN}Found protobuf repository in ${DOWNLOAD_DIR}, skipping download step${NO_COLOR}"
+	    git reset --hard ${PROTOBUF_COMMIT} || fail
+	else
+	    echo -e "${YELLOW}Warning: Found protobuf directory, but it is not a git repository${NO_COLOR}"
+	fi
+    fi
+    if [ "${DOWNLOAD}" == "true" ]; then
+	# clone protobuf from its git repository
+	cd ${DOWNLOAD_DIR} || fail
+	git clone ${PROTOBUF_URL} || fail
+	cd protobuf || fail
+	git reset --hard ${PROTOBUF_COMMIT} || fail
+    fi
     # configure
     ./autogen.sh || fail
     ./configure --prefix=${INSTALL_DIR} || fail
     # build and install
     make || fail
     make check || fail
-    sudo make install || fail
-    sudo ldconfig || fail
+    make install || fail
+    ldconfig || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
     # try to locate protobuf in INSTALL_DIR
