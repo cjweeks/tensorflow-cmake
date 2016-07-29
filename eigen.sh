@@ -2,8 +2,8 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
 RED="\033[1;31m"
-LIGHT_RED="\033[1;33m"
-GREEN="\033[1;32m"
+YELLOW="\033[1;33m"
+GREEN="\033[0;32m"
 NO_COLOR="\033[0m"
 
 ################################### Functions ###################################
@@ -191,7 +191,7 @@ elif [ "${MODE}" == "generate" ]; then
     if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
         echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
     else		
- 	echo -e "${LIGHT_RED}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
+ 	echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
     fi
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
