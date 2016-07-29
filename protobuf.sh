@@ -144,5 +144,5 @@ elif [ "${MODE}" == "generate" ]; then
 	echo "Copied FindProtobuf.cmake to ${CMAKE_DIR}"
     fi
 fi
-echo "Done"
+echo -e "${GREEN}Done${NO_COLOR}"
 exit 0

@@ -211,5 +211,5 @@ elif [ "${MODE}" == "generate" ]; then
     fi
 fi
 
-echo "Done"
+echo -e "${GREEN}Done${NO_COLOR}"
 exit 0
