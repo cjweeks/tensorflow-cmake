@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
+RED="\033[1;31m"
+LIGHT_RED="\033[1;33m"
+GREEN="\033[1;32m"
+NO_COLOR="\033[0m"
 
 # Prints an error message and exits with an error code of 1
 fail () {
-    echo "Command failed; script terminated"
+    echo -e "${RED}Command failed - script terminated${NO_COLOR}"
     exit 1
 }
 
@@ -98,6 +103,7 @@ fi
 
 # print information
 echo
+echo -e "${GREEN}Found Protobuf information in ${TF_DIR}:${NO_COLOR}"
 echo "Protobuf Repository:  ${PROTOBUF_URL}"
 echo "Protobuf Commit:      ${PROTOBUF_COMMIT}"
 echo
@@ -119,6 +125,12 @@ if [ "${MODE}" == "install" ]; then
     sudo ldconfig || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
+    # try to locate protobuf in INSTALL_DIR
+    if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
+        echo -e "${GREEN}Found Protobuf in ${INSTALL_DIR}${NO_COLOR}"
+    else
+ 	echo -e "${LIGHT_RED}Warning: Could not find Protobuf in ${INSTALL_DIR}${NO_COLOR}"	
+    fi
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"	
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
     echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT} || fail

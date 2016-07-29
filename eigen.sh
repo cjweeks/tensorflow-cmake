@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
+RED="\033[1;31m"
+LIGHT_RED="\033[1;33m"
+GREEN="\033[1;32m"
+NO_COLOR="\033[0m"
 
 ################################### Functions ###################################
 
 # Prints an error message and exits with an error code of 1
 fail () {
-    echo "Command failed; script terminated"
+    echo -e "${RED}Command failed - script terminated${NO_COLOR}"
     exit 1
 }
 
@@ -85,7 +89,7 @@ find_eigen () {
 	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_URL}" | sed -n ${ARCHIVE_HASH_SED})
     else
 	# no methods left to try
-	echo "Failure: could not find Eigen version in ${TF_DIR}"
+	echo -e "${RED}Failure: could not find Eigen version in ${TF_DIR}${NO_COLOR}"
 	exit 1
     fi
     # check if all variables were defined and are unempty
@@ -153,6 +157,7 @@ done
 
 # print information
 echo
+echo -e "${GREEN}Found Eigen information in ${TF_DIR}:${NO_COLOR}"
 echo "Eigen URL:           ${EIGEN_URL}"
 echo "Eigen URL Hash:      ${EIGEN_HASH}"
 echo "Eigen Archive Hash:  ${EIGEN_ARCHIVE_HASH}"
@@ -182,6 +187,12 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
+    # try to locate eigen in INSTALL_DIR		
+    if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
+        echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
+    else		
+ 	echo -e "${LIGHT_RED}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
+    fi
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
