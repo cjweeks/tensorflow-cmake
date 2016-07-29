@@ -4,7 +4,7 @@
 
 include(FindPackageHandleStandardArgs)
 include(Eigen_VERSION)
-unset(Eigen_FOUND)
+unset(EIGEN_FOUND)
 
 find_path(Eigen_INCLUDE_DIR
 		NAMES
@@ -18,7 +18,7 @@ find_path(Eigen_INCLUDE_DIR
 find_package_handle_standard_args(Eigen DEFAULT_MSG Eigen_INCLUDE_DIR)
 
 # set external variables for usage in CMakeLists.txt
-if (Eigen_FOUND)
+if (EIGEN_FOUND)
 	set(Eigen_INCLUDE_DIRS ${Eigen_INCLUDE_DIR} ${Eigen_INCLUDE_DIR}/${Eigen_DIR})
 endif()
 

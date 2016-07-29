@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 2.8)
 project(external-project)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -18,11 +18,11 @@ mark_as_advanced(DOWNLOAD_LOCATION)
 include(Protobuf)
 include(Eigen)
 
-set(INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS})
-set(LIBRARIES ${TensorFlow_LIBRARIES})
-set(DEPENDENCIES Eigen Protobuf)
+set(PROJECT_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS})
+set(PROJECT_LIBRARIES ${TensorFlow_LIBRARIES})
+set(PROJECT_DEPENDENCIES Eigen Protobuf)
 
-include_directories(${INCLUDE_DIRS})
+include_directories(${PROJECT_INCLUDE_DIRS})
 add_executable(${EXECUTABLE} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE} ${LIBRARIES})
-add_dependencies(${EXECUTABLE} ${DEPENDENCIES})
+target_link_libraries(${EXECUTABLE} ${PROJECT_LIBRARIES})
+add_dependencies(${EXECUTABLE} ${PROJECT_DEPENDENCIES})

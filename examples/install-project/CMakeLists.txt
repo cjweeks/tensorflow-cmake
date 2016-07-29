@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 2.8)
 project(install-project)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -14,9 +14,9 @@ find_package(TensorFlow REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(Protobuf REQUIRED)
 
-set(INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${PROTOBUF_INCLUDE_DIRS})
-set(LIBRARIES ${TensorFlow_LIBRARIES} ${PROTOBUF_LIBRARIES})
+set(PROJECT_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS} ${Eigen_INCLUDE_DIRS} ${PROTOBUF_INCLUDE_DIRS})
+set(PROJECT_LIBRARIES ${TensorFlow_LIBRARIES} ${PROTOBUF_LIBRARIES})
 
-include_directories(${INCLUDE_DIRS})
+include_directories(${PROJECT_INCLUDE_DIRS})
 add_executable(${EXECUTABLE} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE} ${LIBRARIES})
+target_link_libraries(${EXECUTABLE} ${PROJECT_LIBRARIES})
