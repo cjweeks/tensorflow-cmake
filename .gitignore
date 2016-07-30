@@ -6,3 +6,4 @@ python/
 **/build/
 **/bin/
 **/external/
+**/.idea/
