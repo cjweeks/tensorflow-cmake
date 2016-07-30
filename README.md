@@ -39,13 +39,13 @@ with a C++ project. Build the shared library and copy it to `/usr/local/lib` as 
 bazel build tensorflow:libtensorflow_all.so
 sudo cp bazel-bin/tensorflow/libtensorflow_all.so /usr/local/lib
 ```
-Copy source to `/usr/local/include/google` and remove unneeded items
+Copy the source to `/usr/local/include/google` and remove unneeded items:
 ```bash
 sudo mkdir -p /usr/local/include/google/tensorflow
 sudo cp -r tensorflow /usr/local/include/google/tensorflow/
 sudo find /usr/local/include/google/tensorflow/tensorflow -type f  ! -name "*.h" -delete
 ```
-Copy all generated files from bazel-genfiles
+Copy all generated files from bazel-genfiles:
 ```bash
 sudo cp bazel-genfiles/tensorflow/core/framework/*.h  /usr/local/include/google/tensorflow/tensorflow/core/framework
 sudo cp bazel-genfiles/tensorflow/core/kernels/*.h  /usr/local/include/google/tensorflow/tensorflow/core/kernels
