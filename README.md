@@ -32,7 +32,8 @@ cc_binary(
     ],
 )
 ```
-Build the shared library and copy to `/usr/local/lib`:
+This specifies a new build rule, producing `libtensorflow_all.so`, that includes all the required dependencies for integration
+with a C++ project. Build the shared library and copy it to `/usr/local/lib` as follows:
 ```bash
 ./configure      # Note that this requires user input
 bazel build tensorflow:libtensorflow_all.so
