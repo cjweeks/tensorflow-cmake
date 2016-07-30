@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Author: Connor Weeks
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
 RED="\033[1;31m"
@@ -107,7 +108,7 @@ find_eigen () {
 ################################### Script ###################################
 
 # validate and assign input
-if [ ${#} -lt 2 ]; then
+if [ ${#} -lt 3 ]; then
     print_usage
     exit 1
 fi
