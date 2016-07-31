@@ -10,7 +10,7 @@ done manually for other projects.
 
 ## Configuring
 The following instructions assume you are in the root directory of this repository, no alterations have been made
-to the directory sructure, and the TensorFlow repository is located in `~/git/tensorflow`.  The steps for generating
+to the directory structure, and the TensorFlow repository is located in `~/git/tensorflow`.  The steps for generating
 the projects are as follows:
 
 ### External-Project
