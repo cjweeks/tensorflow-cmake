@@ -29,8 +29,8 @@ print_usage () {
 |
 | --> ${0} install <tensorflow-source-dir> [<install-dir> <download-dir>]
 |
-|     Downloads Eigen to <donload-dir> (defaults to the current directory),
-|     and installs it to <instal-dir> (defaults to /usr/local).
+|     Downloads Eigen to <download-dir> (defaults to the current directory),
+|     and installs it to <install-dir> (defaults to /usr/local).
 |"
 }
 
