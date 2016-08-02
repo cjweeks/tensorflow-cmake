@@ -34,7 +34,7 @@ print_usage () {
 
 
 # validate and assign input
-if [ ${#} -lt 3 ]; then
+if [ ${#} -lt 2 ]; then
     print_usage
     exit 1
 fi
