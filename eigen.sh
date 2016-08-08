@@ -188,7 +188,7 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
-    if [ "${GENERATE_MODE}" == "install" ]; then
+    if [ "${GENERATE_MODE}" == "installed" ]; then
 	# try to locate eigen in INSTALL_DIR		
 	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
             echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"

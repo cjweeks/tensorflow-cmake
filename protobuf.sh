@@ -140,7 +140,7 @@ if [ "${MODE}" == "install" ]; then
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
     
-    if [ "${GENERATE_MODE}" == "install" ]; then
+    if [ "${GENERATE_MODE}" == "installed" ]; then
 	# try to locate protobuf in INSTALL_DIR
 	if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
             echo -e "${GREEN}Found Protobuf in ${INSTALL_DIR}${NO_COLOR}"
