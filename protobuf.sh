@@ -139,12 +139,16 @@ if [ "${MODE}" == "install" ]; then
     ldconfig || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
-    # try to locate protobuf in INSTALL_DIR
-    if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
-        echo -e "${GREEN}Found Protobuf in ${INSTALL_DIR}${NO_COLOR}"
-    else
- 	echo -e "${YELLOW}Warning: Could not find Protobuf in ${INSTALL_DIR}${NO_COLOR}"	
+    
+    if [ "${GENERATE_MODE}" == "install" ]; then
+	# try to locate protobuf in INSTALL_DIR
+	if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
+            echo -e "${GREEN}Found Protobuf in ${INSTALL_DIR}${NO_COLOR}"
+	else
+ 	    echo -e "${YELLOW}Warning: Could not find Protobuf in ${INSTALL_DIR}${NO_COLOR}"	
+	fi
     fi
+    
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"	
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
     echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT} || fail

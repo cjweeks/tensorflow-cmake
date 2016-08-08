@@ -188,12 +188,15 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
-    # try to locate eigen in INSTALL_DIR		
-    if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
-        echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
-    else		
- 	echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
+    if [ "${GENERATE_MODE}" == "install" ]; then
+	# try to locate eigen in INSTALL_DIR		
+	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
+            echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
+	else		
+ 	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
+	fi
     fi
+    
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
