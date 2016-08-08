@@ -148,12 +148,13 @@ elif [ "${MODE}" == "generate" ]; then
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"	
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
     echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT} || fail
-    echo "set(Protobuf_INSTALL_DIR ${INSTALL_DIR})" >> ${PROTOBUF_OUT} || fail
-    echo "Wrote Protobuf_VERSION.cmake to ${CMAKE_DIR}"
     if [ "${GENERATE_MODE}" == "external" ]; then
+	echo "Wrote Protobuf_VERSION.cmake to ${CMAKE_DIR}"
 	cp ${SCRIPT_DIR}/Protobuf.cmake ${CMAKE_DIR} || fail
 	echo "Copied Protobuf.cmake to ${CMAKE_DIR}"
     elif [ "${GENERATE_MODE}" == "installed" ]; then
+	echo "set(Protobuf_INSTALL_DIR ${INSTALL_DIR})" >> ${PROTOBUF_OUT} || fail
+	echo "Wrote Protobuf_VERSION.cmake to ${CMAKE_DIR}"
 	cp ${SCRIPT_DIR}/FindProtobuf.cmake ${CMAKE_DIR} || fail
 	echo "Copied FindProtobuf.cmake to ${CMAKE_DIR}"
     fi
