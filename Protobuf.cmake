@@ -1,7 +1,7 @@
 include(ExternalProject)
 include(Protobuf_VERSION)
 
-set(Protobuf_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/external/include/google/protobuf)
+set(Protobuf_INCLUDE_DIRS ${EXTERNAL_DIR}/include/google/protobuf)
 set(Protobuf_DOWNLOAD_DIR ${DOWNLOAD_LOCATION}/protobuf)
 
 ExternalProject_Add(Protobuf

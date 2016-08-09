@@ -1,7 +1,7 @@
 include(ExternalProject)
 include(Eigen_VERSION)
 
-set(Eigen_INSTALL ${PROJECT_SOURCE_DIR}/external/include/eigen/${Eigen_DIR})
+set(Eigen_INSTALL ${EXTERNAL_DIR}/include/eigen/${Eigen_DIR})
 
 set(Eigen_INCLUDE_DIRS
         ${PROJECT_SOURCE_DIR}/external/include/eigen
