@@ -19,7 +19,7 @@ mark_as_advanced(EXTERNAL_DIR DOWNLOAD_LOCATION)
 include(Protobuf)
 include(Eigen)
 
-set(PROJECT_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS} ${EXTERNAL_DIR})
+set(PROJECT_INCLUDE_DIRS ${TensorFlow_INCLUDE_DIRS} ${EXTERNAL_DIR}/include)
 set(PROJECT_LIBRARIES ${TensorFlow_LIBRARIES})
 set(PROJECT_DEPENDENCIES Eigen Protobuf)
 
