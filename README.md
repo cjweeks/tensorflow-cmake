@@ -137,10 +137,13 @@ list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
 ```
 If *either* Protobuf or Eigen was added as an external dependency, add the following to your `CMakeLists.txt`:
 ```CMake
-# Specify download location
-set (DOWNLOAD_LOCATION "${PROJECT_SOURCE_DIR}/external/src"
+# set variables for external dependencies
+set(EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/external"
+        CACHE PATH "Location where external dependencies will installed")
+set(DOWNLOAD_LOCATION "${EXTERNAL_DIR}/src"
         CACHE PATH "Location where external projects will be downloaded")
-mark_as_advanced(DOWNLOAD_LOCATION)
+mark_as_advanced(EXTERNAL_DIR DOWNLOAD_LOCATION)
+include_directories(${EXTERNAL_DIR}/include)
 ```
 
 The projects in the `examples/` directory demonstrate the correct usage of these instructions.
