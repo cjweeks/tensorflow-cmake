@@ -32,7 +32,7 @@ Generate the required CMake files (be sure to substitute the name of your instal
 ```bash
 # This will generate / copy FindEigen.cmake, Eigen_VERSION.cmake, FindProtobuf.cmake, and Protobuf_VERSION.cmake
 ./eigen.sh generate installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
-./protobuf.sh genearte installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
+./protobuf.sh generate installed ~/git/tensorflow examples/install-project/cmake/Modules /usr/local
 ```
 
 ## Building and Running
