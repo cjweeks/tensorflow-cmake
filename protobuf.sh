@@ -52,7 +52,7 @@ if [ "${MODE}" == "install" ]; then
     INSTALL_DIR="/usr/local"
     DOWNLOAD_DIR="${PWD}"
     if [ ${#} -gt 2 ]; then
-       INSTALL_DIR="${3}"
+       INSTALL_DIR="$(cd ${3}; pwd)"
     fi
     if [ ${#} -gt 3 ]; then
 	DOWNLOAD_DIR="$(cd ${4}; pwd)"
@@ -70,7 +70,7 @@ elif [ "${MODE}" == "generate" ]; then
     fi
     INSTALL_DIR="/usr/local"
     if [ "${GENERATE_MODE}" == "installed" ] && [ ${#} -gt 4 ]; then
-	INSTALL_DIR="${5}"
+	INSTALL_DIR="$(cd ${5}; pwd)"
     fi
 fi
 
