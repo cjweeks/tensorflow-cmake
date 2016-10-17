@@ -77,26 +77,25 @@ fi
 # locate protobuf information in tensorflow directory
 ANY="[^\)]*"
 ANY_NO_QUOTES="[^\)\\\"]*"
-ANY_HEX="[a-fA-F0-9]*"
-GIT_HEADER="native.git_repository\(\s*"
+HTTP_HEADER="native.http_archive\(\s"
 NAME_START="name\s*=\s*\\\""
 QUOTE_START="\s*=\s*\\\""
 QUOTE_END="\\\"\s*,\s*"
 FOOTER="\)"
 PROTOBUF_NAME="${NAME_START}protobuf${QUOTE_END}"
 
-PROTOBUF_REGEX="${GIT_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
+PROTOBUF_REGEX="${HTTP_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
 
-COMMIT="s/\s*commit${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
-REMOTE="s/\s*remote${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+FOLDER="s/\s*strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 
 echo "Finding protobuf information in ${TF_DIR}..."
 PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
+PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL}) || fail
+PROTOBUF_ARCHIVE=$(echo "${PROTOBUF_URL}" | rev | cut -d'/' -f 1 | rev) || fail
+PROTOBUF_FOLDER=$(echo "${PROTOBUF_TEXT}" | sed -n ${FOLDER}) || fail
 
-PROTOBUF_COMMIT=$(echo "${PROTOBUF_TEXT}" | sed -n ${COMMIT}) || fail
-PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${REMOTE}) || fail
-
-if [ -z "${PROTOBUF_URL}" ] || [ -z "${PROTOBUF_COMMIT}" ]; then
+if [ -z "${PROTOBUF_URL}" ] || [ -z "${PROTOBUF_ARCHIVE}" ] || [ -z "${PROTOBUF_FOLDER}" ]; then
     echo "Failure: Could not find all required strings in ${TF_DIR}"
     exit 1
 fi
@@ -104,39 +103,37 @@ fi
 # print information
 echo
 echo -e "${GREEN}Found Protobuf information in ${TF_DIR}:${NO_COLOR}"
-echo "Protobuf Repository:  ${PROTOBUF_URL}"
-echo "Protobuf Commit:      ${PROTOBUF_COMMIT}"
+echo "Protobuf URL:  ${PROTOBUF_URL}"
+echo "Protobuf archive:  ${PROTOBUF_ARCHIVE}"
+echo "Protobuf folder:  ${PROTOBUF_FOLDER}"
 echo
 
 # perform requested action
 if [ "${MODE}" == "install" ]; then
     # see if protobuf already exists in DONWLOAD_DIR
     DOWNLOAD="true"
-    if [ -d "${DOWNLOAD_DIR}/protobuf" ]; then
-	cd ${DOWNLOAD_DIR}/protobuf || fail
-	GIT_REPO_STATUS=$(git rev-parse)
-	if [ GIT_REPO_STATUS -eq 0 ]; then
-	    echo -e "${GREEN}Found protobuf repository in ${DOWNLOAD_DIR}, skipping download step${NO_COLOR}"
-	    git reset --hard ${PROTOBUF_COMMIT} || fail
-	else
-	    echo -e "${YELLOW}Warning: Found protobuf directory, but it is not a git repository${NO_COLOR}"
-	fi
+    if [ -d "${DOWNLOAD_DIR}/${PROTOBUF_FOLDER}" ]; then
+	echo -e "${YELLOW}Warning: Found protobuf directory, will delete and download latest version.${NO_COLOR}"
+	rm -r ${DOWNLOAD_DIR}/${PROTOBUF_FOLDER} || fail
     fi
     if [ "${DOWNLOAD}" == "true" ]; then
-	# clone protobuf from its git repository
+	# download protobuf from http archive
 	cd ${DOWNLOAD_DIR} || fail
-	git clone ${PROTOBUF_URL} || fail
-	cd protobuf || fail
-	git reset --hard ${PROTOBUF_COMMIT} || fail
+	wget -q -N ${PROTOBUF_URL} || fail
+	tar -xf ${PROTOBUF_ARCHIVE} || fail
+	cd ${PROTOBUF_FOLDER} || fail
     fi
     # configure
     ./autogen.sh || fail
     ./configure --prefix=${INSTALL_DIR} || fail
+    echo "Starting protobuf install."
     # build and install
     make || fail
     make check || fail
     make install || fail
     ldconfig || fail
+    cd ${DOWNLOAD_DIR} || fail
+    rm ${PROTOBUF_ARCHIVE} || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
     
@@ -151,7 +148,6 @@ elif [ "${MODE}" == "generate" ]; then
     
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"	
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
-    echo "set(Protobuf_COMMIT ${PROTOBUF_COMMIT})" >> ${PROTOBUF_OUT} || fail
     if [ "${GENERATE_MODE}" == "external" ]; then
 	echo "Wrote Protobuf_VERSION.cmake to ${CMAKE_DIR}"
 	cp ${SCRIPT_DIR}/Protobuf.cmake ${CMAKE_DIR} || fail

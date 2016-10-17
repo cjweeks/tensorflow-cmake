@@ -6,8 +6,7 @@ set(Protobuf_DOWNLOAD_DIR ${DOWNLOAD_LOCATION}/protobuf)
 
 ExternalProject_Add(Protobuf
         PREFIX ${PROJECT_SOURCE_DIR}/external/src/protobuf
-        GIT_REPOSITORY ${Protobuf_URL}
-        GIT_TAG ${Protobuf_COMMIT}
+        URL ${Protobuf_URL}
         DOWNLOAD_DIR ${DOWNLOAD_LOCATION}
         BUILD_IN_SOURCE 1
         CONFIGURE_COMMAND  pwd && ./autogen.sh && ./configure --prefix=${PROJECT_SOURCE_DIR}/external
