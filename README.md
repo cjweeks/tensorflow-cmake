@@ -58,6 +58,8 @@ Copy the third party directory:
 ```bash
 sudo cp -r third_party /usr/local/include/google/tensorflow/
 sudo rm -r /usr/local/include/google/tensorflow/third_party/py
+
+# Note: newer versions of TensorFlow do not have the following directory
 sudo rm -r /usr/local/include/google/tensorflow/third_party/avro
 ```
 
