@@ -78,6 +78,7 @@ find_eigen () {
 	URL_SED_2="\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1${EIGEN_ARCHIVE_HASH}\2/p"
 	URL_SED=${URL_SED_1}${URL_SED_2}
 	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
+	EIGEN_URLS[0]=${EIGEN_URL}
     elif [ ${1} -eq 1 ]; then
 	# find eigen without 'eigen_version' or 'eigen_sha256'
 	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
@@ -86,6 +87,20 @@ find_eigen () {
 	
 	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
 	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
+	EIGEN_URLS[0]=${EIGEN_URL}
+	EIGEN_HASH=$(echo "${EIGEN_TEXT}" | sed -n ${HASH_SED})
+	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_URL}" | sed -n ${ARCHIVE_HASH_SED})
+    elif [ ${1} -eq 2 ]; then
+	# find eigen using arrays
+        URL_SED="s/.*urls=\[\([^]]*\)\].*/\1/p"
+	HASH_SED="s/.*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}.*/\1/p"
+	ARCHIVE_HASH_SED="s=.*/\(${ANY_HEX}\)\\.tar\\.gz.*=\1=p"
+
+	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+	EIGEN_TEXT=${EIGEN_TEXT//[[:space:]]/}
+	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
+	EIGEN_URL=$(echo "${EIGEN_URL}" | sed 's/\"//g')
+	IFS=',' read -r -a EIGEN_URLS <<< "${EIGEN_URL}"
 	EIGEN_HASH=$(echo "${EIGEN_TEXT}" | sed -n ${HASH_SED})
 	EIGEN_ARCHIVE_HASH=$(echo "${EIGEN_URL}" | sed -n ${ARCHIVE_HASH_SED})
     else
@@ -94,9 +109,13 @@ find_eigen () {
 	exit 1
     fi
     # check if all variables were defined and are unempty
-    if [ -z "${EIGEN_URL}" ] || [ -z "${EIGEN_HASH}" ] || [ -z "${EIGEN_ARCHIVE_HASH}" ]; then
+    if [ -z "${EIGEN_URL}" ] ||
+	   [ -z "${EIGEN_URLS}" ] ||
+           [ -z "${EIGEN_HASH}" ] ||
+	   [ -z "${EIGEN_ARCHIVE_HASH}" ];  then
 	# unset varibales and return 1 (not found)
 	unset EIGEN_URL
+	unset EIGEN_URLS
 	unset EIGEN_HASH
 	unset EIGEN_ARCHIVE_HASH
 	return 1
@@ -159,7 +178,7 @@ done
 # print information
 echo
 echo -e "${GREEN}Found Eigen information in ${TF_DIR}:${NO_COLOR}"
-echo "Eigen URL:           ${EIGEN_URL}"
+echo "Eigen URL(s):        ${EIGEN_URLS[*]}"
 echo "Eigen URL Hash:      ${EIGEN_HASH}"
 echo "Eigen Archive Hash:  ${EIGEN_ARCHIVE_HASH}"
 echo
@@ -171,7 +190,18 @@ if [ "${MODE}" == "install" ]; then
     cd ${DOWNLOAD_DIR} || fail
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
-    wget ${EIGEN_URL} || fail
+
+    # download and check for success
+    FOUND_URL=0
+    for URL in "${EIGEN_URLS[@]}"; do
+	echo "Trying URL: ${URL}"
+	wget ${URL} && FOUND_URL=1 && break
+    done
+    if [ ${FOUND_URL} -eq 0 ]; then
+	echo "${RED}Could not download eigen${NO_COLOR}"
+	exit 1
+    fi
+    
     tar -zxvf ${EIGEN_ARCHIVE_HASH}.tar.gz || fail
     cd eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     # create build directory and build
