@@ -33,6 +33,84 @@ print_usage () {
 }
 
 
+
+
+
+# Tries to find protobuf using the given method
+# Methods begin at 0 and increase as integers.
+# If this function is called with a method that
+# does not exist, it will print an error message
+# and exit the program.
+find_protobuf () {
+    # Check for argument
+    if [ -z "${1}" ]; then
+	fail
+    fi
+
+    echo "Finding Protobuf version in ${TF_DIR} using method ${1}..."
+    # defs here
+    ANY="[^\)]*"
+    ANY_NO_QUOTES="[^\)\\\"]*"
+    HTTP_HEADER="native.http_archive\(\s"
+    NAME_START="name\s*=\s*\\\""
+    QUOTE_START="\s*=\s*\\\""
+    QUOTE_END="\\\"\s*,\s*"
+    FOOTER="\)"
+    PROTOBUF_NAME="${NAME_START}protobuf${QUOTE_END}"
+    
+    
+    
+    if [ ${1} -eq 0 ]; then
+	PROTOBUF_REGEX="${HTTP_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
+	FOLDER="s/\s*strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+	
+	URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+	
+	
+	PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
+	PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL})
+	PROTOBUF_URLS[0]=${PROTOBUF_URL}
+	PROTOBUF_FOLDER=$(echo "${PROTOBUF_TEXT}" | sed -n ${FOLDER})
+    elif [ ${1} -eq 1 ]; then
+	# find protobuf using arrays
+        URL_SED="s/.*urls=\[\([^]]*\)\].*/\1/p"
+	FOLDER="s/.*strip_prefix=\\\"\(${ANY_NO_QUOTES}\)\\\".*/\1/p"
+
+	PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+	PROTOBUF_TEXT=${PROTOBUF_TEXT//[[:space:]]/}
+	PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL_SED})
+	PROTOBUF_URL=$(echo "${PROTOBUF_URL}" | sed 's/\"//g')
+	IFS=',' read -r -a PROTOBUF_URLS <<< "${PROTOBUF_URL}"
+	PROTOBUF_FOLDER=$(echo "${PROTOBUF_TEXT}" | sed -n ${FOLDER})
+    else
+	# no methods left to try
+	echo -e "${RED}Failure: could not find Protobuf version in ${TF_DIR}${NO_COLOR}"
+	exit 1
+    fi
+
+
+    # check if all variables were defined and are unempty
+    if [ -z "${PROTOBUF_URL}" ] || [ -z "${PROTOBUF_URLS}" ] || [ -z "${PROTOBUF_FOLDER}" ];  then
+	# unset varibales and return 1 (not found)
+	unset PROTOBUF_URL
+	unset PROTOBUF_URLS
+	unset PROTOBUF_FOLDER
+	return 1
+    fi
+
+    # return found
+    return 0
+}
+
+
+
+
+
+
+
+
+
+
 # validate and assign input
 if [ ${#} -lt 2 ]; then
     print_usage
@@ -74,55 +152,57 @@ elif [ "${MODE}" == "generate" ]; then
     fi
 fi
 
-# locate protobuf information in tensorflow directory
-ANY="[^\)]*"
-ANY_NO_QUOTES="[^\)\\\"]*"
-HTTP_HEADER="native.http_archive\(\s"
-NAME_START="name\s*=\s*\\\""
-QUOTE_START="\s*=\s*\\\""
-QUOTE_END="\\\"\s*,\s*"
-FOOTER="\)"
-PROTOBUF_NAME="${NAME_START}protobuf${QUOTE_END}"
+# try to find protobuf information
+N=0
+find_protobuf ${N}
+while [ ${?} -eq 1 ]; do
+    N=$((N+1))
+    find_protobuf ${N}
+done
 
-PROTOBUF_REGEX="${HTTP_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
 
-URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
-FOLDER="s/\s*strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
-
-echo "Finding protobuf information in ${TF_DIR}..."
-PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
-PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL}) || fail
-PROTOBUF_ARCHIVE=$(echo "${PROTOBUF_URL}" | rev | cut -d'/' -f 1 | rev) || fail
-PROTOBUF_FOLDER=$(echo "${PROTOBUF_TEXT}" | sed -n ${FOLDER}) || fail
-
-if [ -z "${PROTOBUF_URL}" ] || [ -z "${PROTOBUF_ARCHIVE}" ] || [ -z "${PROTOBUF_FOLDER}" ]; then
-    echo "Failure: Could not find all required strings in ${TF_DIR}"
-    exit 1
-fi
 
 # print information
 echo
 echo -e "${GREEN}Found Protobuf information in ${TF_DIR}:${NO_COLOR}"
 echo "Protobuf URL:  ${PROTOBUF_URL}"
-echo "Protobuf archive:  ${PROTOBUF_ARCHIVE}"
 echo "Protobuf folder:  ${PROTOBUF_FOLDER}"
 echo
 
 # perform requested action
 if [ "${MODE}" == "install" ]; then
     # see if protobuf already exists in DONWLOAD_DIR
+
+    # download and check for success
     DOWNLOAD="true"
     if [ -d "${DOWNLOAD_DIR}/${PROTOBUF_FOLDER}" ]; then
 	echo -e "${YELLOW}Warning: Found protobuf directory, will delete and download latest version.${NO_COLOR}"
 	rm -r ${DOWNLOAD_DIR}/${PROTOBUF_FOLDER} || fail
     fi
-    if [ "${DOWNLOAD}" == "true" ]; then
-	# download protobuf from http archive
-	cd ${DOWNLOAD_DIR} || fail
-	wget -q -N ${PROTOBUF_URL} || fail
-	tar -xf ${PROTOBUF_ARCHIVE} || fail
-	cd ${PROTOBUF_FOLDER} || fail
+  
+    FOUND_URL=0
+    for URL in "${PROTOBUF_URLS[@]}"; do
+	echo "Trying URL: ${URL}"
+	PROTOBUF_ARCHIVE=$(echo "${URL}" | rev | cut -d'/' -f 1 | rev)
+	echo "Protobuf Archive: ${PROTOBUF_ARCHIVE}"
+	if [ "${DOWNLOAD}" == "true" ]; then
+	    # download protobuf from http archive
+	    cd ${DOWNLOAD_DIR} || fail
+	    wget -N ${URL} && FOUND_URL=1 && break
+	    
+	fi
+    done
+    if [ ${FOUND_URL} -eq 0 ]; then
+	echo "${RED}Could not download Protobuf${NO_COLOR}"
+	exit 1
     fi
+    
+    tar -xf ${PROTOBUF_ARCHIVE} || fail
+    cd ${PROTOBUF_FOLDER} || fail
+    
+    
+    
+    
     # configure
     ./autogen.sh || fail
     ./configure --prefix=${INSTALL_DIR} || fail
