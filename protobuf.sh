@@ -178,6 +178,7 @@ if [ "${MODE}" == "install" ]; then
     if [ -d "${DOWNLOAD_DIR}/${PROTOBUF_FOLDER}" ]; then
 	echo -e "${YELLOW}Warning: Found protobuf directory, will delete and download latest version.${NO_COLOR}"
 	rm -r ${DOWNLOAD_DIR}/${PROTOBUF_FOLDER} || fail
+	echo "Removed ${DOWNLOAD_DIR}/${PROTOBUF_FOLDER}"
     fi
   
     FOUND_URL=0
@@ -186,9 +187,10 @@ if [ "${MODE}" == "install" ]; then
 	PROTOBUF_ARCHIVE=$(echo "${URL}" | rev | cut -d'/' -f 1 | rev)
 	echo "Protobuf Archive: ${PROTOBUF_ARCHIVE}"
 	if [ "${DOWNLOAD}" == "true" ]; then
+	    rm -f ${DOWNLOAD_DIR}/${PROTOBUF_ARCHIVE}
 	    # download protobuf from http archive
 	    cd ${DOWNLOAD_DIR} || fail
-	    wget -N ${URL} && FOUND_URL=1 && break
+	    wget ${URL} && FOUND_URL=1 && break
 	    
 	fi
     done
