@@ -56,7 +56,7 @@ find_protobuf () {
     QUOTE_START="\s*=\s*\\\""
     QUOTE_END="\\\"\s*,\s*"
     FOOTER="\)"
-    PROTOBUF_NAME="${NAME_START}protobuf${QUOTE_END}"
+    PROTOBUF_NAME="${NAME_START}com_google_protobuf${QUOTE_END}"
     
     
     
