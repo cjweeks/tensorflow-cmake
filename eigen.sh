@@ -24,7 +24,7 @@ print_usage () {
 |
 |     Generates the cmake files for the given installation of tensorflow
 |     and writes them to <cmake-dir>.  If 'generate installed' is executed,
-|     <install-dir> corresponds to the directory Eigen was installed to; 
+|     <install-dir> corresponds to the directory Eigen was installed to;
 |     defaults to /usr/local.
 |
 | --> ${0} install <tensorflow-source-dir> [<install-dir> <download-dir>]
@@ -55,7 +55,7 @@ find_eigen () {
     FOOTER="\)"
     EIGEN_NAME="${NAME_START}eigen_archive${QUOTE_END}"
     EIGEN_REGEX="${ARCHIVE_HEADER}${ANY}${EIGEN_NAME}${ANY}${FOOTER}"
-    
+
     echo "Finding Eigen version in ${TF_DIR} using method ${1}..."
     # check specified format
     if [ ${1} -eq 0 ]; then
@@ -64,8 +64,8 @@ find_eigen () {
 	EIGEN_HASH_REGEX="eigen_sha256\s*=\s*\\\"${ANY_HEX}\\\"\s*"
 	HASH_SED="s/\s*eigen_sha256${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
 	ARCHIVE_HASH_SED="s/\s*${EIGEN_VERSION_LABEL}${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
-	
-	
+
+
 	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
 	EIGEN_ARCHIVE_TEXT=$(grep -Pzo ${EIGEN_ARCHIVE_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
 	EIGEN_HASH_TEXT=$(grep -Pzo ${EIGEN_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
@@ -84,7 +84,7 @@ find_eigen () {
 	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 	HASH_SED="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
 	ARCHIVE_HASH_SED="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
-	
+
 	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
 	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
 	EIGEN_URLS[0]=${EIGEN_URL}
@@ -121,7 +121,7 @@ find_eigen () {
 	return 1
     fi
     # return found
-    return 0 
+    return 0
 }
 
 ################################### Script ###################################
@@ -201,14 +201,13 @@ if [ "${MODE}" == "install" ]; then
 	echo "${RED}Could not download eigen${NO_COLOR}"
 	exit 1
     fi
-    
+
     tar -zxvf ${EIGEN_ARCHIVE_HASH}.tar.gz || fail
     cd eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     # create build directory and build
     mkdir build || fail
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR}\
-	  -DINCLUDE_INSTALL_DIR=${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH} .. || fail
+    cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} .. || fail
     make || fail
     make install || fail
     echo "Installation complete"
@@ -219,14 +218,14 @@ if [ "${MODE}" == "install" ]; then
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
     if [ "${GENERATE_MODE}" == "installed" ]; then
-	# try to locate eigen in INSTALL_DIR		
-	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then		
+	# try to locate eigen in INSTALL_DIR
+	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then
             echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
-	else		
- 	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
+	else
+ 	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"
 	fi
     fi
-    
+
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
