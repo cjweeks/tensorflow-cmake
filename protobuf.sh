@@ -211,7 +211,7 @@ if [ "${MODE}" == "install" ]; then
     ./configure --prefix=${INSTALL_DIR} || fail
     echo "Starting protobuf install."
     # build and install
-    make -jNUMJOBS || fail
+    make -j$NUMJOBS || fail
     make check || fail
     make install || fail
     if [ `id -u` == 0 ]; then
