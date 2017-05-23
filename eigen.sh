@@ -2,6 +2,7 @@
 # Author: Connor Weeks
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
+NUMJOBS=${NUMJOBS:-1}
 RED="\033[1;31m"
 YELLOW="\033[1;33m"
 GREEN="\033[0;32m"
@@ -208,7 +209,7 @@ if [ "${MODE}" == "install" ]; then
     mkdir build || fail
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} .. || fail
-    make || fail
+    make -j$NUMJOBS || fail
     make install || fail
     echo "Installation complete"
     echo "Cleaning up..."
