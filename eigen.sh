@@ -218,10 +218,16 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
+    OLD_EIGEN=0
     if [ "${GENERATE_MODE}" == "installed" ]; then
 	# try to locate eigen in INSTALL_DIR
 	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then
+	    # this is how eiegn was stored in older version of TensorFlow
             echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
+	elif [ -d "${INSTALL_DIR}/include/eigen3" ]; then
+	    # this is the new way
+	    echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
+	    OLD_EIGEN=0
 	else
  	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"
 	fi
@@ -232,7 +238,12 @@ elif [ "${MODE}" == "generate" ]; then
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
     echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
     echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT} || fail
-    echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
+    if [ ${OLD_EIGEN} -eq 1 ]; then
+	echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
+    else
+	echo "set(Eigen_DIR eigen3)" >> ${EIGEN_OUT} || fail
+    fi
+    
     echo "set(Eigen_INSTALL_DIR ${INSTALL_DIR})" >> ${EIGEN_OUT} || fail
     echo "Eigen_VERSION.cmake written to ${CMAKE_DIR}"
     # perform specific operations regarding installation
