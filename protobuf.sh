@@ -2,7 +2,6 @@
 # Author: Connor Weeks
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
-NUMJOBS=${NUMJOBS:-1}
 RED="\033[1;31m"
 YELLOW="\033[1;33m"
 GREEN="\033[0;32m"
@@ -58,16 +57,17 @@ find_protobuf () {
     QUOTE_END="\\\"\s*,\s*"
     FOOTER="\)"
     PROTOBUF_NAME="${NAME_START}com_google_protobuf${QUOTE_END}"
-
-
-
+    
+    
+    
     if [ ${1} -eq 0 ]; then
 	PROTOBUF_REGEX="${HTTP_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
 	FOLDER="s/\s*strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
-
+	
 	URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
-
-
+	
+	echo ${PROTOBUF_REGEX}
+	echo ${TF_DIR}
 	PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
 	PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL})
 	PROTOBUF_URLS[0]=${PROTOBUF_URL}
@@ -192,36 +192,33 @@ if [ "${MODE}" == "install" ]; then
 	    # download protobuf from http archive
 	    cd ${DOWNLOAD_DIR} || fail
 	    wget ${URL} && FOUND_URL=1 && break
-
 	fi
     done
     if [ ${FOUND_URL} -eq 0 ]; then
 	echo "${RED}Could not download Protobuf${NO_COLOR}"
 	exit 1
     fi
-
+    
     tar -xf ${PROTOBUF_ARCHIVE} || fail
     cd ${PROTOBUF_FOLDER} || fail
-
-
-
-
+    
+    
+    
+    
     # configure
     ./autogen.sh || fail
     ./configure --prefix=${INSTALL_DIR} || fail
     echo "Starting protobuf install."
     # build and install
-    make -j$NUMJOBS || fail
+    make -j$(nproc) || fail
     make check || fail
     make install || fail
-    if [ `id -u` == 0 ]; then
-        ldconfig || fail
-    fi
+    ldconfig || fail
     cd ${DOWNLOAD_DIR} || fail
     rm ${PROTOBUF_ARCHIVE} || fail
     echo "Protobuf has been installed to ${INSTALL_DIR}"
 elif [ "${MODE}" == "generate" ]; then
-
+    
     if [ "${GENERATE_MODE}" == "installed" ]; then
 	# try to locate protobuf in INSTALL_DIR
 	if [ -d "${INSTALL_DIR}/include/google/protobuf" ]; then
@@ -230,7 +227,7 @@ elif [ "${MODE}" == "generate" ]; then
  	    echo -e "${YELLOW}Warning: Could not find Protobuf in ${INSTALL_DIR}${NO_COLOR}"
 	fi
     fi
-
+    
     PROTOBUF_OUT="${CMAKE_DIR}/Protobuf_VERSION.cmake"
     echo "set(Protobuf_URL ${PROTOBUF_URL})" > ${PROTOBUF_OUT} || fail
     if [ "${GENERATE_MODE}" == "external" ]; then

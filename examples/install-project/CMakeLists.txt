@@ -7,7 +7,7 @@ set(SOURCE_FILES main.cc)
 set(EXECUTABLE external-project)
 
 # add modules
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/Modules")
+list(APPEND CMAKE_MODULE_PATH "/usr/local/share/cmake-3.5/Modules")
 
 # find packages
 find_package(TensorFlow REQUIRED)

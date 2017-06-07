@@ -2,7 +2,6 @@
 # Author: Connor Weeks
 
 SCRIPT_DIR="$(cd "$(dirname "${0}")"; pwd)"
-NUMJOBS=${NUMJOBS:-1}
 RED="\033[1;31m"
 YELLOW="\033[1;33m"
 GREEN="\033[0;32m"
@@ -56,7 +55,7 @@ find_eigen () {
     FOOTER="\)"
     EIGEN_NAME="${NAME_START}eigen_archive${QUOTE_END}"
     EIGEN_REGEX="${ARCHIVE_HEADER}${ANY}${EIGEN_NAME}${ANY}${FOOTER}"
-
+    
     echo "Finding Eigen version in ${TF_DIR} using method ${1}..."
     # check specified format
     if [ ${1} -eq 0 ]; then
@@ -65,8 +64,8 @@ find_eigen () {
 	EIGEN_HASH_REGEX="eigen_sha256\s*=\s*\\\"${ANY_HEX}\\\"\s*"
 	HASH_SED="s/\s*eigen_sha256${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
 	ARCHIVE_HASH_SED="s/\s*${EIGEN_VERSION_LABEL}${QUOTE_START}\(${ANY_HEX}\)\\\"\s*/\1/p"
-
-
+	
+	
 	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
 	EIGEN_ARCHIVE_TEXT=$(grep -Pzo ${EIGEN_ARCHIVE_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
 	EIGEN_HASH_TEXT=$(grep -Pzo ${EIGEN_HASH_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
@@ -85,7 +84,7 @@ find_eigen () {
 	URL_SED="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 	HASH_SED="s/\s*sha256${QUOTE_START}\(${ANY_HEX}\)${QUOTE_END}/\1/p"
 	ARCHIVE_HASH_SED="s=.*/\(${ANY_HEX}\)\\.tar\\.gz=\1=p"
-
+	
 	EIGEN_TEXT=$(grep -Pzo ${EIGEN_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
 	EIGEN_URL=$(echo "${EIGEN_TEXT}" | sed -n ${URL_SED})
 	EIGEN_URLS[0]=${EIGEN_URL}
@@ -187,7 +186,7 @@ echo
 # perform requested action
 if [ "${MODE}" == "install" ]; then
     # donwload eigen and extract to download directory
-    echo "Downlaoding Eigen to ${DOWNLOAD_DIR}"
+    echo "Downloading Eigen to ${DOWNLOAD_DIR}"
     cd ${DOWNLOAD_DIR} || fail
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
@@ -202,14 +201,14 @@ if [ "${MODE}" == "install" ]; then
 	echo "${RED}Could not download eigen${NO_COLOR}"
 	exit 1
     fi
-
+    
     tar -zxvf ${EIGEN_ARCHIVE_HASH}.tar.gz || fail
     cd eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     # create build directory and build
     mkdir build || fail
     cd build
     cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} .. || fail
-    make -j$NUMJOBS || fail
+    make -j$(nproc) || fail
     make install || fail
     echo "Installation complete"
     echo "Cleaning up..."
@@ -218,32 +217,21 @@ if [ "${MODE}" == "install" ]; then
     rm -rf eigen-eigen-${EIGEN_ARCHIVE_HASH} || fail
     rm -f ${EIGEN_ARCHIVE_HASH}.tar.gz* || fail
 elif [ "${MODE}" == "generate" ]; then
-    OLD_EIGEN=0
     if [ "${GENERATE_MODE}" == "installed" ]; then
 	# try to locate eigen in INSTALL_DIR
-	if [ -d "${INSTALL_DIR}/include/eigen/eigen-eigen-${EIGEN_ARCHIVE_HASH}" ]; then
-	    # this is how eiegn was stored in older version of TensorFlow
+	if [ -d "${INSTALL_DIR}/include/eigen3" ]; then
             echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
-	elif [ -d "${INSTALL_DIR}/include/eigen3" ]; then
-	    # this is the new way
-	    echo -e "${GREEN}Found Eigen in ${INSTALL_DIR}${NO_COLOR}"
-	    OLD_EIGEN=0
-	else
- 	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"
+	else		
+ 	    echo -e "${YELLOW}Warning: Could not find Eigen in ${INSTALL_DIR}${NO_COLOR}"			
 	fi
     fi
-
+    
     # output Eigen information to file
     EIGEN_OUT="${CMAKE_DIR}/Eigen_VERSION.cmake"
     echo "set(Eigen_URL ${EIGEN_URL})" > ${EIGEN_OUT} || fail
     echo "set(Eigen_ARCHIVE_HASH ${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
     echo "set(Eigen_HASH SHA256=${EIGEN_HASH})" >> ${EIGEN_OUT} || fail
-    if [ ${OLD_EIGEN} -eq 1 ]; then
-	echo "set(Eigen_DIR eigen-eigen-${EIGEN_ARCHIVE_HASH})" >> ${EIGEN_OUT} || fail
-    else
-	echo "set(Eigen_DIR eigen3)" >> ${EIGEN_OUT} || fail
-    fi
-    
+    echo "set(Eigen_DIR eigen3)" >> ${EIGEN_OUT} || fail
     echo "set(Eigen_INSTALL_DIR ${INSTALL_DIR})" >> ${EIGEN_OUT} || fail
     echo "Eigen_VERSION.cmake written to ${CMAKE_DIR}"
     # perform specific operations regarding installation
