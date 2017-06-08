@@ -47,8 +47,9 @@ find_protobuf () {
     if [ -z "${1}" ]; then
 	fail
     fi
+    ATTEMPT_NUMBER=${1}
 
-    echo "Finding Protobuf version in ${TF_DIR} using method ${1}..."
+    echo "Finding Protobuf version in ${TF_DIR} using method ${ATTEMPT_NUMBER}..."
     # defs here
     ANY="[^\)]*"
     ANY_NO_QUOTES="[^\)\\\"]*"
@@ -57,22 +58,29 @@ find_protobuf () {
     QUOTE_START="\s*=\s*\\\""
     QUOTE_END="\\\"\s*,\s*"
     FOOTER="\)"
-    PROTOBUF_NAME="${NAME_START}com_google_protobuf${QUOTE_END}"
+    
+    if [ ${ATTEMPT_NUMBER} -lt 2 ]; then
+	PROTOBUF_NAME="${NAME_START}protobuf${QUOTE_END}"
+    else
+	# set name and reset the number
+	# we want to repeat each method below for both names
+	PROTOBUF_NAME="${NAME_START}com_google_protobuf${QUOTE_END}"
+	ATTEMPT_NUMBER=$((${ATTEMPT_NUMBER} - 2))
+    fi
+    
 
-
-
-    if [ ${1} -eq 0 ]; then
+    if [ ${ATTEMPT_NUMBER} -eq 0 ]; then
 	PROTOBUF_REGEX="${HTTP_HEADER}${ANY}${PROTOBUF_NAME}${ANY}${FOOTER}"
-	FOLDER="s/\s*strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+	FOLDER="s/strip_prefix${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 
-	URL="s/\s*url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
+	URL="s/url${QUOTE_START}\(${ANY_NO_QUOTES}\)${QUOTE_END}/\1/p"
 
-
-	PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl) || fail
+	PROTOBUF_TEXT=$(grep -Pzo ${PROTOBUF_REGEX} ${TF_DIR}/tensorflow/workspace.bzl)
+	PROTOBUF_TEXT=${PROTOBUF_TEXT//[[:space:]]/}
 	PROTOBUF_URL=$(echo "${PROTOBUF_TEXT}" | sed -n ${URL})
 	PROTOBUF_URLS[0]=${PROTOBUF_URL}
 	PROTOBUF_FOLDER=$(echo "${PROTOBUF_TEXT}" | sed -n ${FOLDER})
-    elif [ ${1} -eq 1 ]; then
+    elif [ ${ATTEMPT_NUMBER} -eq 1 ]; then
 	# find protobuf using arrays
         URL_SED="s/.*urls=\[\([^]]*\)\].*/\1/p"
 	FOLDER="s/.*strip_prefix=\\\"\(${ANY_NO_QUOTES}\)\\\".*/\1/p"
