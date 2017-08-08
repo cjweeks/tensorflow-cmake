@@ -107,7 +107,7 @@ add_dependencies(<EXECUTABLE_NAME> Eigen)
 
 
 ### Protobuf: Installing Locally
-Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<cmake-dir>]`.  The arguments are identical to those described in the Eigen
+Execute the `protobuf.sh` script as follows: `sudo protobuf.sh install <tensorflow-root> [<install-dir> <download-dir>]`.  The arguments are identical to those described in the Eigen
 section above.  
 
 Generate the required files as follows: `protobuf.sh generate installed <tensorflow-root> [<cmake-dir> <install-dir>]`; the arguments are also identical to those above. 
@@ -131,7 +131,8 @@ add_dependencies(<EXECUTABLE_NAME> Protobuf)
 
 ## Step 3: Configure the CMake Project
 
-Edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most CMake programs):
+Copy the `FindTensorflow.cmake` file in this repository to your CMake modules directory.
+Next, edit your `CMakeLists.txt` to append your custom modules directory to the list of CMake modules (this is a common step in most CMake programs):
 ```CMake
 list(APPEND CMAKE_MODULE_PATH <CMAKE_MODULE_DIR>)
 # Replace <CMAKE_MODULE_DIR> with your path
