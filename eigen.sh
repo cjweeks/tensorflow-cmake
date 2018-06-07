@@ -49,7 +49,7 @@ find_eigen () {
     ANY="[^\)]*"
     ANY_NO_QUOTES="[^\)\\\"]*"
     ANY_HEX="[a-fA-F0-9]*"
-    ARCHIVE_HEADER="native.new_http_archive\(\s*"
+    ARCHIVE_HEADER="tf_http_archive\(\s*"
     NAME_START="name\s*=\s*\\\""
     QUOTE_START="\s*=\s*\\\""
     QUOTE_END="\\\"\s*,\s*"
