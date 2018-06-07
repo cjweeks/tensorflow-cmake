@@ -25,7 +25,7 @@ print_usage () {
 |     and writes them to <cmake-dir>. If 'generate installed' is executed,
 |     <install-dir> corresponds to the directory Protobuf was installed to;
 |     defaults to /usr/local.
-|HTTP_HEADER="tf_http_archive\(\s"
+|
 | --> ${0} install <tensorflow-source-dir> [<install-dir> <download-dir>]
 |
 |     Downloads Protobuf to <download-dir> (defaults to the current directory),
