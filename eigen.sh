@@ -49,7 +49,7 @@ find_eigen () {
     ANY="[^\)]*"
     ANY_NO_QUOTES="[^\)\\\"]*"
     ANY_HEX="[a-fA-F0-9]*"
-    ARCHIVE_HEADER="native.new_http_archive\(\s*"
+    ARCHIVE_HEADER="tf_http_archive\(\s*"
     NAME_START="name\s*=\s*\\\""
     QUOTE_START="\s*=\s*\\\""
     QUOTE_END="\\\"\s*,\s*"
@@ -248,10 +248,10 @@ elif [ "${MODE}" == "generate" ]; then
     echo "Eigen_VERSION.cmake written to ${CMAKE_DIR}"
     # perform specific operations regarding installation
     if [ "${GENERATE_MODE}" == "external" ]; then
-	cp ${SCRIPT_DIR}/Eigen.cmake ${CMAKE_DIR} || fail
+	cp ${SCRIPT_DIR}/Eigen.cmake ${CMAKE_DIR}
 	echo "Wrote Eigen_VERSION.cmake and Eigen.cmake to ${CMAKE_DIR}"
     elif [ "${GENERATE_MODE}" == "installed" ]; then
-	cp ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR} || fail
+	cp ${SCRIPT_DIR}/FindEigen.cmake ${CMAKE_DIR}
 	echo "FindEigen.cmake copied to ${CMAKE_DIR}"
     fi
 fi
